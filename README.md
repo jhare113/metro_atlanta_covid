@@ -1,4 +1,4 @@
-# metro_atlanta_covid
+# Metro Atlanta Covid-19
 
 I wanted a better visualization of local Covid-19 data than I've been able to 
 find, particularly in terms of the distribution of cases and deaths
