@@ -1,0 +1,197 @@
+---
+title: "Metro Atlanta COVID"
+output: html_notebook
+---
+
+I wanted a better visualization of local Covid-19 data than I've been able to 
+find, particularly in terms of the number as distribution of cases and deaths
+are changing over time. The charts below track confirmed cases and deaths in the 
+core Metro Atlanta counties, both in absolute and relative terms. The subsequent 
+charts track new cases and deaths in Metro Atlanta, Georgia, and the United 
+States.
+
+All data come from the New York Times' ongoing [repository](https://github.com/nytimes/covid-19-data) 
+of Covid-19 cases and
+deaths in the United States.
+
+It's hard to know how to interpret these numbers since there are major known
+unknowns. Neither confirmed cases nor deaths can be said to be reliable counts
+of the true numbers.
+
+```{r setup, include = FALSE}
+
+#Load the needed packages
+
+library(tidyverse)
+
+#Grab the raw data from the NY Times
+
+counties <- read_csv(
+        "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv", 
+                     col_types = cols(
+        date = col_date(format = ""),
+        county = col_character(),
+        state = col_character(),
+        fips = col_character(),
+        cases = col_double(),
+        deaths = col_double()
+))
+
+#Calculate the total number of cases and deaths in the US
+
+usa <- counties %>%
+        group_by(date) %>%
+        summarise("all_cases" = sum(cases),
+                  "all_deaths" = sum(deaths)) %>%
+        mutate("new_deaths" = all_deaths - lag(all_deaths, default = 0),
+               "new_cases" = all_cases - lag(all_cases, default = 0))
+
+#Calculate the total number of cases and deaths in Georgia
+
+georgia <- counties %>%
+        filter(state == "Georgia") %>%
+        group_by(date) %>%
+        summarise("all_cases" = sum(cases),
+                  "all_deaths" = sum(deaths)) %>%
+        mutate("new_deaths" = all_deaths - lag(all_deaths, default = 0),
+               "new_cases" = all_cases - lag(all_cases, default = 0))
+
+#Filter down to the five core metro Atlanta counties
+
+metro_atl <- counties %>%
+        filter(state == "Georgia" & (county == "DeKalb" | county == "Gwinnett" | 
+                county == "Fulton" | county == "Cobb" | county == "Clayton"))
+
+#Add the census counts for the metro Atlanta counties
+
+atl_counties_population <- enframe(c("DeKalb" = 756558, "Gwinnett" = 927781, 
+        "Fulton" = 1050114, "Cobb" = 756865, "Clayton" = 289615), 
+        name = "county", value = "county_population")
+```
+
+# Metro Atlanta
+
+## Total Cases by County
+
+```{r atl_cases_absolute, echo = FALSE}
+
+#Visualize Metro Atlanta county case data in absolute terms
+
+        ggplot(data = metro_atl) +
+        geom_point(mapping = aes(x = date, y = cases, color = county)) +
+        geom_line(mapping = aes(x = date, y = cases, color = county)) 
+```
+
+## Total Deaths by County
+
+```{r atl_deaths_absolute, echo = FALSE}
+
+#Visualize Metro Atlanta county case data in absolute terms
+
+        ggplot(data = metro_atl, mapping = aes(x = date, y = deaths, 
+                color = county)) +
+        geom_point() +
+        geom_line()
+```
+
+## Cases per Thousand by County
+
+```{r atl_relative_cases, echo = FALSE}
+
+#Visualize Metro Atlanta County cases in relative terms
+
+metro_atl %>%
+        mutate(cases_per_thousand = (cases / 
+                atl_counties_population$county_population) * 1000) %>%
+ggplot(mapping = aes(x = date, y = cases_per_thousand, color = county)) +
+        geom_point() +
+        geom_line()
+```
+
+## Deaths per Thousand by County
+
+```{r alt_relative_deaths, echo = FALSE}
+
+#Visualize Metro Atlanta county deaths in relative terms
+
+metro_atl %>%
+        mutate(deaths_per_thousand = (deaths / 
+                atl_counties_population$county_population) * 1000) %>%
+ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
+        geom_point() +
+        geom_line()
+
+```
+
+## New Cases in Metro Atlanta
+
+```{r atl_new_cases, echo = FALSE}
+
+#Visualize new cases for entire metro area
+
+        metro_atl %>%
+                group_by(date) %>%
+                summarise("all_cases" = sum(cases)) %>%
+                mutate("new_cases" = 
+                               all_cases - lag(all_cases, default = 0)) %>%
+                ggplot(mapping = aes(x = date, y = new_cases)) +
+                geom_col() +
+                geom_smooth(se = FALSE)
+```
+
+## New Deaths in Metro Atlanta
+
+```{r atl_new_deaths, echo = FALSE}
+
+#Visualize new deaths for entire metro area
+
+        metro_atl %>%
+                group_by(date) %>%
+                summarise("all_deaths" = sum(deaths)) %>%
+                mutate("new_deaths" = 
+                               all_deaths - lag(all_deaths, default = 0)) %>%
+                ggplot(mapping = aes(x = date, y = new_deaths)) +
+                geom_col() +
+                geom_smooth(se = FALSE)
+```
+
+
+# Georgia
+
+## New Cases
+
+```{r georgia_new_cases, echo = FALSE}
+ggplot(georgia, mapping = aes(x = date, y = new_cases), lab) +
+        geom_col() +
+        geom_smooth(se = FALSE, span = .5)
+        
+```
+
+## New Deaths
+
+```{r georgia_new_deaths, echo = FALSE}
+ggplot(georgia, mapping = aes(x = date, y = new_deaths)) +
+        geom_col() +
+        geom_smooth(se = FALSE, span = .5)
+```
+
+
+# United States
+
+## New Cases
+
+```{r us_cases, echo = FALSE}
+ggplot(usa, mapping = aes(x = date, y = new_cases)) +
+        geom_col() +
+        geom_smooth(se = FALSE, span = .25)
+```
+
+## New Deaths
+
+```{r us_deaths, echo = FALSE}
+ggplot(usa, mapping = aes(x = date, y = new_deaths)) +
+        geom_col() +
+        geom_smooth(se = FALSE, span = .25)
+
+```
+
