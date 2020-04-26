@@ -23,49 +23,31 @@ of the true numbers.
 
 # Metro Atlanta
 
-## Total Cases by County
-
 ![](Metro_Atlanta-_COVID_files/figure-html/atl_cases_absolute-1.png)<!-- -->
 
-## Total Deaths by County
 
 ![](Metro_Atlanta-_COVID_files/figure-html/atl_deaths_absolute-1.png)<!-- -->
 
-## Cases per Thousand by County
 
 ![](Metro_Atlanta-_COVID_files/figure-html/atl_relative_cases-1.png)<!-- -->
 
-## Deaths per Thousand by County
-
 ![](Metro_Atlanta-_COVID_files/figure-html/alt_relative_deaths-1.png)<!-- -->
 
-## New Cases in Metro Atlanta
-
 ![](Metro_Atlanta-_COVID_files/figure-html/atl_new_cases-1.png)<!-- -->
-
-## New Deaths in Metro Atlanta
 
 ![](Metro_Atlanta-_COVID_files/figure-html/atl_new_deaths-1.png)<!-- -->
 
 
 # Georgia
 
-## New Cases
-
 ![](Metro_Atlanta-_COVID_files/figure-html/georgia_new_cases-1.png)<!-- -->
-
-## New Deaths
 
 ![](Metro_Atlanta-_COVID_files/figure-html/georgia_new_deaths-1.png)<!-- -->
 
 
 # United States
 
-## New Cases
-
 ![](Metro_Atlanta-_COVID_files/figure-html/us_cases-1.png)<!-- -->
-
-## New Deaths
 
 ![](Metro_Atlanta-_COVID_files/figure-html/us_deaths-1.png)<!-- -->
 
