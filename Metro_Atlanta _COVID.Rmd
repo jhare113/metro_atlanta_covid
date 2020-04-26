@@ -13,7 +13,9 @@ library(tidyverse)
 
 knitr::opts_chunk$set(
   message = FALSE,
-  echo = FALSE
+  echo = FALSE,
+  out.width = "70%",
+  fig.align = "center"
 )
 
 #Grab the raw data from the NY Times

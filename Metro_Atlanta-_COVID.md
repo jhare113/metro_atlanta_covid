@@ -23,31 +23,31 @@ of the true numbers.
 
 # Metro Atlanta
 
-![](Metro_Atlanta-_COVID_files/figure-html/atl_cases_absolute-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/atl_cases_absolute-1.png" width="70%" style="display: block; margin: auto;" />
 
 
-![](Metro_Atlanta-_COVID_files/figure-html/atl_deaths_absolute-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/atl_deaths_absolute-1.png" width="70%" style="display: block; margin: auto;" />
 
 
-![](Metro_Atlanta-_COVID_files/figure-html/atl_relative_cases-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/atl_relative_cases-1.png" width="70%" style="display: block; margin: auto;" />
 
-![](Metro_Atlanta-_COVID_files/figure-html/alt_relative_deaths-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/alt_relative_deaths-1.png" width="70%" style="display: block; margin: auto;" />
 
-![](Metro_Atlanta-_COVID_files/figure-html/atl_new_cases-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/atl_new_cases-1.png" width="70%" style="display: block; margin: auto;" />
 
-![](Metro_Atlanta-_COVID_files/figure-html/atl_new_deaths-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/atl_new_deaths-1.png" width="70%" style="display: block; margin: auto;" />
 
 
 # Georgia
 
-![](Metro_Atlanta-_COVID_files/figure-html/georgia_new_cases-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/georgia_new_cases-1.png" width="70%" style="display: block; margin: auto;" />
 
-![](Metro_Atlanta-_COVID_files/figure-html/georgia_new_deaths-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/georgia_new_deaths-1.png" width="70%" style="display: block; margin: auto;" />
 
 
 # United States
 
-![](Metro_Atlanta-_COVID_files/figure-html/us_cases-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/us_cases-1.png" width="70%" style="display: block; margin: auto;" />
 
-![](Metro_Atlanta-_COVID_files/figure-html/us_deaths-1.png)<!-- -->
+<img src="Metro_Atlanta-_COVID_files/figure-html/us_deaths-1.png" width="70%" style="display: block; margin: auto;" />
 
