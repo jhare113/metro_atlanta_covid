@@ -7,6 +7,11 @@ output:
 
 ```{r setup, include = FALSE}
 
+knitr::opts_chunk$set(
+  message = FALSE,
+  echo = FALSE
+)
+
 #Load the needed packages
 
 library(tidyverse)
@@ -74,7 +79,7 @@ of the true numbers.
 
 ## Total Cases by County
 
-```{r atl_cases_absolute, echo = FALSE}
+```{r atl_cases_absolute}
 
 #Visualize Metro Atlanta county case data in absolute terms
 
@@ -85,7 +90,7 @@ of the true numbers.
 
 ## Total Deaths by County
 
-```{r atl_deaths_absolute, echo = FALSE}
+```{r atl_deaths_absolute}
 
 #Visualize Metro Atlanta county case data in absolute terms
 
@@ -97,7 +102,7 @@ of the true numbers.
 
 ## Cases per Thousand by County
 
-```{r atl_relative_cases, echo = FALSE}
+```{r atl_relative_cases}
 
 #Visualize Metro Atlanta County cases in relative terms
 
@@ -111,7 +116,7 @@ ggplot(mapping = aes(x = date, y = cases_per_thousand, color = county)) +
 
 ## Deaths per Thousand by County
 
-```{r alt_relative_deaths, echo = FALSE}
+```{r alt_relative_deaths}
 
 #Visualize Metro Atlanta county deaths in relative terms
 
@@ -126,7 +131,7 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
 
 ## New Cases in Metro Atlanta
 
-```{r atl_new_cases, echo = FALSE}
+```{r atl_new_cases}
 
 #Visualize new cases for entire metro area
 
@@ -142,7 +147,7 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
 
 ## New Deaths in Metro Atlanta
 
-```{r atl_new_deaths, echo = FALSE}
+```{r atl_new_deaths}
 
 #Visualize new deaths for entire metro area
 
@@ -161,7 +166,7 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
 
 ## New Cases
 
-```{r georgia_new_cases, echo = FALSE}
+```{r georgia_new_cases}
 ggplot(georgia, mapping = aes(x = date, y = new_cases), lab) +
         geom_col() +
         geom_smooth(se = FALSE, span = .5)
@@ -170,7 +175,7 @@ ggplot(georgia, mapping = aes(x = date, y = new_cases), lab) +
 
 ## New Deaths
 
-```{r georgia_new_deaths, echo = FALSE}
+```{r georgia_new_deaths}
 ggplot(georgia, mapping = aes(x = date, y = new_deaths)) +
         geom_col() +
         geom_smooth(se = FALSE, span = .5)
@@ -181,7 +186,7 @@ ggplot(georgia, mapping = aes(x = date, y = new_deaths)) +
 
 ## New Cases
 
-```{r us_cases, echo = FALSE}
+```{r us_cases}
 ggplot(usa, mapping = aes(x = date, y = new_cases)) +
         geom_col() +
         geom_smooth(se = FALSE, span = .25)
@@ -189,7 +194,7 @@ ggplot(usa, mapping = aes(x = date, y = new_cases)) +
 
 ## New Deaths
 
-```{r us_deaths, echo = FALSE}
+```{r us_deaths}
 ggplot(usa, mapping = aes(x = date, y = new_deaths)) +
         geom_col() +
         geom_smooth(se = FALSE, span = .25)
