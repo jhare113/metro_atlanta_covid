@@ -1,8 +1,8 @@
 ---
 title: "Metro Atlanta COVID"
 output: 
-  html_document: 
-    keep_md: yes
+  html_document: default
+  github_document: default
 ---
 
 ```{r setup, include = FALSE}
