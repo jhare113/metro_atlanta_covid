@@ -1,7 +1,6 @@
 ---
 title: "Metro Atlanta COVID"
 output: 
-  html_document: default
   github_document: default
 ---
 
