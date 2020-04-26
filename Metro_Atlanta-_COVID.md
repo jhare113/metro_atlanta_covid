@@ -41,19 +41,9 @@ of the true numbers.
 
 ## New Cases in Metro Atlanta
 
-
-```
-## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
-```
-
 ![](Metro_Atlanta-_COVID_files/figure-html/atl_new_cases-1.png)<!-- -->
 
 ## New Deaths in Metro Atlanta
-
-
-```
-## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
-```
 
 ![](Metro_Atlanta-_COVID_files/figure-html/atl_new_deaths-1.png)<!-- -->
 
@@ -62,19 +52,9 @@ of the true numbers.
 
 ## New Cases
 
-
-```
-## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
-```
-
 ![](Metro_Atlanta-_COVID_files/figure-html/georgia_new_cases-1.png)<!-- -->
 
 ## New Deaths
-
-
-```
-## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
-```
 
 ![](Metro_Atlanta-_COVID_files/figure-html/georgia_new_deaths-1.png)<!-- -->
 
@@ -83,19 +63,9 @@ of the true numbers.
 
 ## New Cases
 
-
-```
-## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
-```
-
 ![](Metro_Atlanta-_COVID_files/figure-html/us_cases-1.png)<!-- -->
 
 ## New Deaths
-
-
-```
-## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
-```
 
 ![](Metro_Atlanta-_COVID_files/figure-html/us_deaths-1.png)<!-- -->
 
