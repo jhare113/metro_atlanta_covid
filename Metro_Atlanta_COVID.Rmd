@@ -1,7 +1,8 @@
 ---
 title: "Metro Atlanta COVID"
-output: 
+output:
   github_document: default
+  html_notebook: default
 ---
 
 ```{r setup, include = FALSE}
