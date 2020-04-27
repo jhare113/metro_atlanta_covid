@@ -77,6 +77,8 @@ It's hard to know how to interpret these numbers since there are major known
 unknowns. Neither confirmed cases nor deaths can be said to be reliable counts
 of the true numbers.
 
+Data current as of `r format(Sys.time(), '%d %B, %Y')`
+
 # Metro Atlanta
 
 ```{r atl_cases_absolute}
