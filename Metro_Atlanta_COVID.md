@@ -14,8 +14,10 @@ and deaths in the United States.
 
 It’s hard to know how to interpret these numbers since there are major
 known unknowns. Neither confirmed cases nor deaths can be said to be
-reliable counts of the true
-numbers.
+reliable counts of the true numbers.
+
+Data current as of April 27,
+2020
 
 # Metro Atlanta
 
