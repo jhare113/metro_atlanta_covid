@@ -17,7 +17,7 @@ known unknowns. Neither confirmed cases nor deaths can be said to be
 reliable counts of the true numbers.
 
 Data current as of April 27,
-2020
+2020.
 
 # Metro Atlanta
 
