@@ -14,6 +14,7 @@ library(tidyverse)
 knitr::opts_chunk$set(
   message = FALSE,
   echo = FALSE,
+  warning = FALSE,
   out.width = "70%",
   fig.align = "center"
 )
@@ -92,13 +93,14 @@ Data current as of `r format(Sys.time(), '%B %d, %Y')`.
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
-             y = "Total Cases")
+             y = "Total Cases") +
+             scale_y_log10()
 ```
 
 
 ```{r atl_deaths_absolute}
 
-#Visualize Metro Atlanta county case data in absolute terms
+#Visualize Metro Atlanta county death data in absolute terms
 
         ggplot(data = metro_atl, mapping = aes(x = date, y = deaths, 
                 color = county)) +
@@ -108,7 +110,8 @@ Data current as of `r format(Sys.time(), '%B %d, %Y')`.
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
-             y = "Total Deaths")
+             y = "Total Deaths") +
+             scale_y_log10()
 ```
 
 
@@ -126,7 +129,8 @@ ggplot(mapping = aes(x = date, y = cases_per_thousand, color = county)) +
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
-             y = "Cases per Thousand")
+             y = "Cases per Thousand") +
+             scale_y_log10()
 ```
 
 ```{r alt_relative_deaths}
@@ -143,7 +147,8 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
-             y = "Deaths per Thousand")
+             y = "Deaths per Thousand") +
+             scale_y_log10()
 
 ```
 
