@@ -64,7 +64,7 @@ atl_counties_population <- enframe(c("DeKalb" = 756558, "Gwinnett" = 927781,
         name = "county", value = "county_population")
 ```
 
-I wanted a better visualization of local Covid-19 data than I've been able to 
+I wanted a better visualization of local COVID-19 data than I've been able to 
 find, particularly in terms of the distribution of cases and deaths
 as they change over time. The charts below track confirmed cases and deaths in 
 the core Metro Atlanta counties, both in absolute and relative terms. The 
