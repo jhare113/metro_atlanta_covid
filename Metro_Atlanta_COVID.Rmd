@@ -190,7 +190,7 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
 ```{r georgia_new_cases}
 ggplot(georgia, mapping = aes(x = date, y = new_cases), lab) +
         geom_col() +
-        geom_smooth(se = FALSE, span = .5) +
+        geom_smooth(se = FALSE) +
         labs(title = "New Cases in Georgia",
              caption = "Data from The New York Times",
              x = "Date",
@@ -200,7 +200,7 @@ ggplot(georgia, mapping = aes(x = date, y = new_cases), lab) +
 ```{r georgia_new_deaths}
 ggplot(georgia, mapping = aes(x = date, y = new_deaths)) +
         geom_col() +
-        geom_smooth(se = FALSE, span = .5) +
+        geom_smooth(se = FALSE) +
         labs(title = "New Deaths in Georgia",
              caption = "Data from The New York Times",
              x = "Date",
@@ -213,7 +213,7 @@ ggplot(georgia, mapping = aes(x = date, y = new_deaths)) +
 ```{r us_cases}
 ggplot(usa, mapping = aes(x = date, y = new_cases)) +
         geom_col() +
-        geom_smooth(se = FALSE, span = .25) +
+        geom_smooth(se = FALSE) +
         labs(title = "New Cases in the United States",
              caption = "Data from The New York Times",
              x = "Date",
@@ -223,7 +223,7 @@ ggplot(usa, mapping = aes(x = date, y = new_cases)) +
 ```{r us_deaths}
 ggplot(usa, mapping = aes(x = date, y = new_deaths)) +
         geom_col() +
-        geom_smooth(se = FALSE, span = .25) +
+        geom_smooth(se = FALSE) +
         labs(title = "New Deaths in the United States",
              caption = "Data from The New York Times",
              x = "Date",
