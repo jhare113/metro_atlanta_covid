@@ -93,7 +93,8 @@ Data current as of `r format(Sys.time(), '%B %d, %Y')`.
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
-             y = "Total Cases")
+             y = "Total Cases") +
+        theme(legend.position = c(.15, .7))
 ```
 
 
@@ -109,7 +110,8 @@ Data current as of `r format(Sys.time(), '%B %d, %Y')`.
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
-             y = "Total Deaths")
+             y = "Total Deaths") +
+        theme(legend.position = c(.15, .7))
 ```
 
 
@@ -127,7 +129,8 @@ ggplot(mapping = aes(x = date, y = cases_per_thousand, color = county)) +
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
-             y = "Cases per Thousand")
+             y = "Cases per Thousand") +
+        theme(legend.position = c(.15, .7))
 ```
 
 ```{r alt_relative_deaths}
@@ -144,7 +147,8 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
-             y = "Deaths per Thousand")
+             y = "Deaths per Thousand") +
+        theme(legend.position = c(.15, .7))
 
 ```
 
