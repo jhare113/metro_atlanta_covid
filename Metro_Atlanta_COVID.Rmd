@@ -10,6 +10,7 @@ output:
 #Load the needed packages
 
 library(tidyverse)
+library(zoo)
 
 knitr::opts_chunk$set(
   message = FALSE,
@@ -39,7 +40,11 @@ usa <- counties %>%
         summarise("all_cases" = sum(cases),
                   "all_deaths" = sum(deaths)) %>%
         mutate("new_deaths" = all_deaths - lag(all_deaths, default = 0),
-               "new_cases" = all_cases - lag(all_cases, default = 0))
+               "new_cases" = all_cases - lag(all_cases, default = 0)) %>%
+        mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
+                                               fill = 0, align = "right")) %>%
+        mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
+                                               fill = 0, align = "right"))
 
 #Calculate the total number of cases and deaths in Georgia
 
@@ -49,7 +54,11 @@ georgia <- counties %>%
         summarise("all_cases" = sum(cases),
                   "all_deaths" = sum(deaths)) %>%
         mutate("new_deaths" = all_deaths - lag(all_deaths, default = 0),
-               "new_cases" = all_cases - lag(all_cases, default = 0))
+               "new_cases" = all_cases - lag(all_cases, default = 0)) %>%
+        mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
+                                               fill = 0, align = "right")) %>%
+        mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
+                                               fill = 0, align = "right"))
 
 #Filter down to the five core metro Atlanta counties
 
@@ -161,9 +170,11 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
                 summarise("all_cases" = sum(cases)) %>%
                 mutate("new_cases" = 
                                all_cases - lag(all_cases, default = 0)) %>%
-                ggplot(mapping = aes(x = date, y = new_cases)) +
-                geom_col() +
-                geom_smooth(se = FALSE) +
+                mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
+                                               fill = 0, align = "right")) %>%
+                ggplot(mapping = aes(x = date)) +
+                geom_col(mapping = aes(y = new_cases)) +
+                geom_line(mapping = aes(y = weekly_mean_cases)) +
                 labs(title = "New Cases in Metro Atlanta",
                     caption = "Data from The New York Times",
                     x = "Date",
@@ -179,9 +190,11 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
                 summarise("all_deaths" = sum(deaths)) %>%
                 mutate("new_deaths" = 
                                all_deaths - lag(all_deaths, default = 0)) %>%
-                ggplot(mapping = aes(x = date, y = new_deaths)) +
-                geom_col() +
-                geom_smooth(se = FALSE) +
+                mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
+                                               fill = 0, align = "right")) %>%
+                ggplot(mapping = aes(x = date)) +
+                geom_col(mapping = aes(y = new_deaths)) +
+                geom_line(mapping = aes(y = weekly_mean_deaths)) +
                 labs(title = "New Deaths in Metro Atlanta",
                     caption = "Data from The New York Times",
                     x = "Date",
@@ -192,9 +205,9 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
 # Georgia
 
 ```{r georgia_new_cases}
-ggplot(georgia, mapping = aes(x = date, y = new_cases), lab) +
-        geom_col() +
-        geom_smooth(se = FALSE) +
+ggplot(georgia) + 
+        geom_col(mapping = aes(x = date, y = new_cases)) +
+        geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
         labs(title = "New Cases in Georgia",
              caption = "Data from The New York Times",
              x = "Date",
@@ -202,9 +215,9 @@ ggplot(georgia, mapping = aes(x = date, y = new_cases), lab) +
 ```
 
 ```{r georgia_new_deaths}
-ggplot(georgia, mapping = aes(x = date, y = new_deaths)) +
-        geom_col() +
-        geom_smooth(se = FALSE) +
+ggplot(georgia) +
+        geom_col(mapping = aes(x = date, y = new_deaths)) +
+        geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
         labs(title = "New Deaths in Georgia",
              caption = "Data from The New York Times",
              x = "Date",
@@ -215,9 +228,9 @@ ggplot(georgia, mapping = aes(x = date, y = new_deaths)) +
 # United States
 
 ```{r us_cases}
-ggplot(usa, mapping = aes(x = date, y = new_cases)) +
-        geom_col() +
-        geom_smooth(se = FALSE) +
+ggplot(usa) +
+        geom_col(mapping = aes(x = date, y = new_cases)) +
+        geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
         labs(title = "New Cases in the United States",
              caption = "Data from The New York Times",
              x = "Date",
@@ -225,9 +238,9 @@ ggplot(usa, mapping = aes(x = date, y = new_cases)) +
 ```
 
 ```{r us_deaths}
-ggplot(usa, mapping = aes(x = date, y = new_deaths)) +
-        geom_col() +
-        geom_smooth(se = FALSE) +
+ggplot(usa) +
+        geom_col(mapping = aes(x = date, y = new_deaths)) +
+        geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
         labs(title = "New Deaths in the United States",
              caption = "Data from The New York Times",
              x = "Date",
