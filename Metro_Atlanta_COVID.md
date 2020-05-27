@@ -9,15 +9,14 @@ relative terms. The subsequent charts track new cases and deaths in
 Metro Atlanta, Georgia, and the United States.
 
 All data come from the New York Times’ ongoing
-[repository](https://github.com/nytimes/covid-19-data) of Covid-19 cases
+[repository](https://github.com/nytimes/covid-19-data) of COVID-19 cases
 and deaths in the United States.
 
 It’s hard to know how to interpret these numbers since there are major
 known unknowns. Neither confirmed cases nor deaths can be said to be
 reliable counts of the true numbers.
 
-Data current as of May 26,
-2020.
+Data current as of May 27, 2020.
 
 # Metro Atlanta
 
