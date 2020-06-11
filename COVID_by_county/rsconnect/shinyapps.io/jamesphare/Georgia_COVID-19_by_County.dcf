@@ -1,0 +1,12 @@
+name: Georgia_COVID-19_by_County
+title: Georgia_COVID-19_by_County
+username:
+account: jamesphare
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2379310
+bundleId: 3206398
+url: https://jamesphare.shinyapps.io/Georgia_COVID-19_by_County/
+when: 1590788004.68704
+asMultiple: FALSE
+asStatic: FALSE
