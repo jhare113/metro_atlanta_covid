@@ -10,10 +10,13 @@ counties <- read_csv(
         date = col_date(format = ""),
         county = col_character(),
         state = col_character(),
+        fips = col_double(),
         cases = col_double(),
         deaths = col_double()
     )
 )
+
+states <- counties %>% select(state) %>% unique() %>% arrange(state)
 
 # Define UI for application
 ui <- fluidPage(
@@ -26,7 +29,7 @@ ui <- fluidPage(
         sidebarPanel(
             selectInput("state",
                         label = "State:",
-                        choices = state.name,
+                        choices = states$state,
                         selected = "Georgia"
             ),
             uiOutput("state_counties")
