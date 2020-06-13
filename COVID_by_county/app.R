@@ -128,7 +128,8 @@ server <- function(input, output) {
             mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
                                                    fill = 0, align = "right")) %>%
         ggplot() +
-            geom_col(mapping = aes(x = date, y = new_deaths)) +
+            geom_col(mapping = aes(x = date, y = new_deaths, 
+                                   fill = "#800014"), show.legend = FALSE) +
             geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
             labs(title = paste("New Deaths in", input$state),
                  caption = "Data from The New York Times",
@@ -210,6 +211,7 @@ server <- function(input, output) {
             mutate("new_cases" = all_cases - lag(all_cases, default = 0)) %>%
             mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
                                                   fill = 0, align = "right")) %>%
+            
             ggplot() +
             geom_col(mapping = aes(x = date, y = new_cases)) +
             geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
@@ -217,8 +219,9 @@ server <- function(input, output) {
                  caption = "Data from The New York Times",
                  x = "Date",
                  y = "New Cases")
+        
     })
-    
+            
     output$county_deaths <- renderPlot({
         counties %>%
             filter(state == input$state) %>%
@@ -229,13 +232,16 @@ server <- function(input, output) {
             mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
                                                    fill = 0, align = "right")) %>%
             ggplot() +
-            geom_col(mapping = aes(x = date, y = new_deaths)) +
+            geom_col(mapping = aes(x = date, y = new_deaths, fill = "#800014"),
+                     show.legend = FALSE) +
             geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
             labs(title = paste("New Deaths in", input$county),
                  caption = "Data from The New York Times",
                  x = "Date",
                  y = "New Deaths")
+            
     })
+            
     
 #create plots for USA
     
@@ -251,7 +257,8 @@ server <- function(input, output) {
     
     output$usa_deaths <- renderPlot({
         ggplot(usa) +
-            geom_col(mapping = aes(x = date, y = new_deaths)) +
+            geom_col(mapping = aes(x = date, y = new_deaths, 
+                                   fill = "#800014"), show.legend = FALSE) +
             geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
             labs(title = "New Deaths in the United States",
                  caption = "Data from The New York Times",
