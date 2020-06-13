@@ -18,11 +18,43 @@ counties <- read_csv(
 
 states <- counties %>% select(state) %>% unique() %>% arrange(state)
 
+#Calculate the total number of cases and deaths in the US
+
+usa <- counties %>%
+    group_by(date) %>%
+    summarise("all_cases" = sum(cases),
+              "all_deaths" = sum(deaths)) %>%
+    mutate("new_deaths" = all_deaths - lag(all_deaths, default = 0),
+           "new_cases" = all_cases - lag(all_cases, default = 0)) %>%
+    mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
+                                           fill = 0, align = "right")) %>%
+    mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
+                                          fill = 0, align = "right"))
+
+usa_deaths <- usa$all_deaths[nrow(usa)]
+
+usa_cases <- usa$all_cases[nrow(usa)]
+
 # Define UI for application
 ui <- fluidPage(
 
     # Application title
     titlePanel("COVID-19 Data by State and County"),
+
+tags$p("I wanted a better visualization of local COVID-19 data than I've been 
+able to find, particularly in terms of the distribution of cases and deaths
+as they change over time. The charts below track new cases and deaths in 
+the state and county of your choice, as well as in the United States as 
+       a whole."),
+tags$p("All data come from the New York Times' ongoing",
+tags$a(href = "https://github.com/nytimes/covid-19-data", "repository"),
+"of COVID-19 cases and deaths in the United States."),
+tags$p("It's hard to know how to interpret these numbers since there are major known
+unknowns. Neither confirmed cases nor deaths can be said to be reliable counts
+of the true numbers."),
+tags$p("Data current as of",
+format(Sys.time(), '%B %d, %Y')),
+tags$hr(),
 
     # Sidebar with dropdown menus to choose state and county 
     sidebarLayout(
@@ -32,15 +64,30 @@ ui <- fluidPage(
                         choices = states$state,
                         selected = "Georgia"
             ),
-            uiOutput("state_counties")
+            uiOutput("state_counties",
+                     label = "County"),
+            tags$p(textOutput("text_data")),
+            tags$p("In the United States, there have been",
+                   usa_deaths,
+                   "deaths and",
+                   usa_cases,
+                   "cases."),
+            tags$img(width = "100%",
+                     height = "auto",
+                     src = "23312.jpg")
             ),
 
         # Show a plot of the generated cases
         mainPanel(
+           tags$h3(textOutput("county")),
+           plotOutput("county_cases"),
+           plotOutput("county_deaths"),
+           tags$h3(textOutput("state")),
            plotOutput("state_cases"),
            plotOutput("state_deaths"),
-           plotOutput("county_cases"),
-           plotOutput("county_deaths")
+           tags$h3("United States"),
+           plotOutput("usa_cases"),
+           plotOutput("usa_deaths")
         )
     )
 )
@@ -60,7 +107,7 @@ server <- function(input, output) {
             ggplot() +
             geom_col(mapping = aes(x = date, y = new_cases)) +
             geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
-            labs(title = "New Cases in State",
+            labs(title = paste("New Cases in", input$state),
                  caption = "Data from The New York Times",
                  x = "Date",
                  y = "New Cases")
@@ -76,11 +123,60 @@ server <- function(input, output) {
         ggplot() +
             geom_col(mapping = aes(x = date, y = new_deaths)) +
             geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
-            labs(title = "New Deaths in State",
+            labs(title = paste("New Deaths in", input$state),
                  caption = "Data from The New York Times",
                  x = "Date",
                  y = "New Deaths")
     })
+    
+#Create text output about total values
+    
+    output$text_data <- renderText({
+        current_state <- counties %>% 
+            filter(state == input$state)
+        current_state <- current_state %>% 
+            group_by(date) %>% 
+            summarise(sum(deaths))
+        total_state_deaths <- current_state$`sum(deaths)`[nrow(current_state)]
+        
+        current_state <- counties %>% 
+            filter(state == input$state)
+        current_state <- current_state %>% 
+            group_by(date) %>% 
+            summarise(sum(cases))
+        total_state_cases <- current_state$`sum(cases)`[nrow(current_state)]
+        
+        current_county <- counties %>%
+            filter(state == input$state & county == input$county)
+        current_county <- current_county %>%
+            group_by(date) %>%
+            summarise(sum(deaths))
+        total_county_deaths <- current_county$`sum(deaths)`[nrow(current_county)]
+        
+        current_county <- counties %>%
+            filter(state == input$state & county == input$county)
+        current_county <- current_county %>%
+            group_by(date) %>%
+            summarise(sum(cases))
+        total_county_cases <- current_county$`sum(cases)`[nrow(current_county)]
+        
+        paste("There have been ",
+              total_county_deaths,
+              " deaths out of ",
+              total_county_cases,
+              " cases in ",
+              input$county,
+              ". ",
+              input$state,
+              " has seen ",    
+              total_state_deaths,
+              " deaths out of ",
+              total_state_cases,
+              " cases.",
+              sep = "")
+    })
+    output$state <- renderText(input$state)
+    output$county <-renderText(input$county)
     
 #create reactive county dropdown menu
         
@@ -108,7 +204,7 @@ server <- function(input, output) {
             ggplot() +
             geom_col(mapping = aes(x = date, y = new_cases)) +
             geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
-            labs(title = "New Cases in County",
+            labs(title = paste("New Cases in", input$county),
                  caption = "Data from The New York Times",
                  x = "Date",
                  y = "New Cases")
@@ -125,11 +221,33 @@ server <- function(input, output) {
             ggplot() +
             geom_col(mapping = aes(x = date, y = new_deaths)) +
             geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
-            labs(title = "New Deaths in County",
+            labs(title = paste("New Deaths in", input$county),
                  caption = "Data from The New York Times",
                  x = "Date",
                  y = "New Deaths")
-    })    
+    })
+    
+#create plots for USA
+    
+    output$usa_cases <- renderPlot({
+        ggplot(usa) +
+            geom_col(mapping = aes(x = date, y = new_cases)) +
+            geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
+            labs(title = "New Cases in the United States",
+                 caption = "Data from The New York Times",
+                 x = "Date",
+                 y = "New Cases")
+    })
+    
+    output$usa_deaths <- renderPlot({
+        ggplot(usa) +
+            geom_col(mapping = aes(x = date, y = new_deaths)) +
+            geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
+            labs(title = "New Deaths in the United States",
+                 caption = "Data from The New York Times",
+                 x = "Date",
+                 y = "New Deaths")
+    })
         
 }
 
