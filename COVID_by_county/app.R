@@ -116,7 +116,8 @@ server <- function(input, output) {
             labs(title = paste("New Cases in", input$state),
                  caption = "Data from The New York Times",
                  x = "Date",
-                 y = "New Cases")
+                 y = "New Cases") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
     })
     
     output$state_deaths <- renderPlot({
@@ -134,7 +135,8 @@ server <- function(input, output) {
             labs(title = paste("New Deaths in", input$state),
                  caption = "Data from The New York Times",
                  x = "Date",
-                 y = "New Deaths")
+                 y = "New Deaths") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
     })
     
 #create reactive county dropdown menu
@@ -218,7 +220,8 @@ server <- function(input, output) {
             labs(title = paste("New Cases in", input$county),
                  caption = "Data from The New York Times",
                  x = "Date",
-                 y = "New Cases")
+                 y = "New Cases") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
         
     })
             
@@ -238,7 +241,8 @@ server <- function(input, output) {
             labs(title = paste("New Deaths in", input$county),
                  caption = "Data from The New York Times",
                  x = "Date",
-                 y = "New Deaths")
+                 y = "New Deaths") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
             
     })
             
@@ -252,7 +256,8 @@ server <- function(input, output) {
             labs(title = "New Cases in the United States",
                  caption = "Data from The New York Times",
                  x = "Date",
-                 y = "New Cases")
+                 y = "New Cases") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
     })
     
     output$usa_deaths <- renderPlot({
@@ -263,7 +268,8 @@ server <- function(input, output) {
             labs(title = "New Deaths in the United States",
                  caption = "Data from The New York Times",
                  x = "Date",
-                 y = "New Deaths")
+                 y = "New Deaths") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
     })
         
 }
