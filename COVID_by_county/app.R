@@ -43,11 +43,8 @@ ui <- fluidPage(
 
     # Application title
     titlePanel("COVID-19 Data by State and County"),
-    tags$p("I wanted a better visualization of local COVID-19 data than I've 
-    been able to find, particularly in terms of the distribution of cases and 
-    deaths as they change over time. The charts below track new cases and deaths 
-    in the state and county of your choice, as well as in the United States as a 
-    whole."),
+    tags$p("The charts below track new cases and deaths in the state and county 
+    of your choice, as well as in the United States as a whole."),
     
     tags$p("All data come from the New York Times' ongoing",
            
