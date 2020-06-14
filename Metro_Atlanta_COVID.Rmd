@@ -73,9 +73,7 @@ atl_counties_population <- enframe(c("DeKalb" = 756558, "Gwinnett" = 927781,
         name = "county", value = "county_population")
 ```
 
-I wanted a better visualization of local COVID-19 data than I've been able to 
-find, particularly in terms of the distribution of cases and deaths
-as they change over time. The charts below track confirmed cases and deaths in 
+The charts below track confirmed cases and deaths in 
 the core Metro Atlanta counties, both in absolute and relative terms. The 
 subsequent charts track new cases and deaths in Metro Atlanta, Georgia, and the 
 United States.
@@ -96,14 +94,14 @@ Data current as of `r format(Sys.time(), '%B %d, %Y')`.
 #Visualize Metro Atlanta county case data in absolute terms
 
         ggplot(data = metro_atl) +
-        geom_point(mapping = aes(x = date, y = cases, color = county)) +
         geom_line(mapping = aes(x = date, y = cases, color = county))+
         labs(title = "Total Cases by County",
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
              y = "Total Cases") +
-        theme(legend.position = c(.15, .7))
+        theme(legend.position = c(.15, .7)) +
+        scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 
@@ -113,14 +111,14 @@ Data current as of `r format(Sys.time(), '%B %d, %Y')`.
 
         ggplot(data = metro_atl, mapping = aes(x = date, y = deaths, 
                 color = county)) +
-        geom_point() +
         geom_line() +
         labs(title = "Total Deaths by County",
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
              y = "Total Deaths") +
-        theme(legend.position = c(.15, .7))
+        theme(legend.position = c(.15, .7)) +
+        scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 
@@ -132,14 +130,14 @@ metro_atl %>%
         mutate(cases_per_thousand = (cases / 
                 atl_counties_population$county_population) * 1000) %>%
 ggplot(mapping = aes(x = date, y = cases_per_thousand, color = county)) +
-        geom_point() +
         geom_line() +
         labs(title = "Cases per Thousand by County",
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
              y = "Cases per Thousand") +
-        theme(legend.position = c(.15, .7))
+        theme(legend.position = c(.15, .7)) +
+        scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 ```{r alt_relative_deaths}
@@ -150,14 +148,14 @@ metro_atl %>%
         mutate(deaths_per_thousand = (deaths / 
                 atl_counties_population$county_population) * 1000) %>%
 ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
-        geom_point() +
         geom_line() +
         labs(title = "Deaths per Thousand by County",
              caption = "Data from The New York Times",
              color = "County",
              x = "Date",
              y = "Deaths per Thousand") +
-        theme(legend.position = c(.15, .7))
+        theme(legend.position = c(.15, .7)) +
+        scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 
 ```
 
@@ -173,12 +171,20 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
                 mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
                                                fill = 0, align = "right")) %>%
                 ggplot(mapping = aes(x = date)) +
-                geom_col(mapping = aes(y = new_cases)) +
-                geom_line(mapping = aes(y = weekly_mean_cases)) +
+                geom_col(mapping = aes(y = new_cases, fill = "new daily cases")) +
+                geom_line(mapping = aes(y = weekly_mean_cases, 
+                                        color = "7-day average")) +
                 labs(title = "New Cases in Metro Atlanta",
                     caption = "Data from The New York Times",
                     x = "Date",
-                    y = "New Cases")
+                    y = "New Cases") +
+                scale_color_manual(
+                    values = c("7-day average" = "#800014")) +
+                scale_fill_manual(
+                    values= c("new daily cases" = "gray40")) +
+                theme(legend.title = element_blank(),
+                  legend.position = "top") +
+                scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 ```{r atl_new_deaths}
@@ -193,12 +199,21 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
                 mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
                                                fill = 0, align = "right")) %>%
                 ggplot(mapping = aes(x = date)) +
-                geom_col(mapping = aes(y = new_deaths)) +
-                geom_line(mapping = aes(y = weekly_mean_deaths)) +
+                geom_col(mapping = aes(y = new_deaths, 
+                                       fill = "new daily deaths")) +
+                geom_line(mapping = aes(y = weekly_mean_deaths, 
+                                        color = "7-day average")) +
                 labs(title = "New Deaths in Metro Atlanta",
                     caption = "Data from The New York Times",
                     x = "Date",
-                    y = "New Deaths")
+                    y = "New Deaths") +
+            scale_color_manual(
+                values = c("7-day average" = "black")) +
+            scale_fill_manual(
+                values= c("new daily deaths" = "#800014")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 
@@ -206,22 +221,40 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
 
 ```{r georgia_new_cases}
 ggplot(georgia) + 
-        geom_col(mapping = aes(x = date, y = new_cases)) +
-        geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
+        geom_col(mapping = aes(x = date, y = new_cases, 
+                               fill = "new daily cases")) +
+        geom_line(mapping = aes(x = date, y = weekly_mean_cases,
+                                color = "7-day average")) +
         labs(title = "New Cases in Georgia",
              caption = "Data from The New York Times",
              x = "Date",
-             y = "New Cases")
+             y = "New Cases") +
+            scale_color_manual(
+                values = c("7-day average" = "#800014")) +
+            scale_fill_manual(
+                values= c("new daily cases" = "gray40")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 ```{r georgia_new_deaths}
 ggplot(georgia) +
-        geom_col(mapping = aes(x = date, y = new_deaths)) +
-        geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
+        geom_col(mapping = aes(x = date, y = new_deaths, 
+                               fill = "new daily deaths")) +
+        geom_line(mapping = aes(x = date, y = weekly_mean_deaths,
+                                color = "7-day average")) +
         labs(title = "New Deaths in Georgia",
              caption = "Data from The New York Times",
              x = "Date",
-             y = "New Deaths")
+             y = "New Deaths") +
+            scale_color_manual(
+                values = c("7-day average" = "black")) +
+            scale_fill_manual(
+                values= c("new daily deaths" = "#800014")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 
@@ -229,21 +262,39 @@ ggplot(georgia) +
 
 ```{r us_cases}
 ggplot(usa) +
-        geom_col(mapping = aes(x = date, y = new_cases)) +
-        geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
+        geom_col(mapping = aes(x = date, y = new_cases,
+                               fill = "new daily cases")) +
+        geom_line(mapping = aes(x = date, y = weekly_mean_cases,
+                                color = "7-day average")) +
         labs(title = "New Cases in the United States",
              caption = "Data from The New York Times",
              x = "Date",
-             y = "New Cases")
+             y = "New Cases") +
+            scale_color_manual(
+                values = c("7-day average" = "#800014")) +
+            scale_fill_manual(
+                values= c("new daily cases" = "gray40")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 ```{r us_deaths}
 ggplot(usa) +
-        geom_col(mapping = aes(x = date, y = new_deaths)) +
-        geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
+        geom_col(mapping = aes(x = date, y = new_deaths,
+                               fill = "new daily deaths")) +
+        geom_line(mapping = aes(x = date, y = weekly_mean_deaths,
+                                color = "7-day average")) +
         labs(title = "New Deaths in the United States",
              caption = "Data from The New York Times",
              x = "Date",
-             y = "New Deaths")
+             y = "New Deaths") +
+            scale_color_manual(
+                values = c("7-day average" = "black")) +
+            scale_fill_manual(
+                values= c("new daily deaths" = "#800014")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 

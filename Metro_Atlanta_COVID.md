@@ -1,12 +1,10 @@
 Metro Atlanta COVID
 ================
 
-I wanted a better visualization of local COVID-19 data than I’ve been
-able to find, particularly in terms of the distribution of cases and
-deaths as they change over time. The charts below track confirmed cases
-and deaths in the core Metro Atlanta counties, both in absolute and
-relative terms. The subsequent charts track new cases and deaths in
-Metro Atlanta, Georgia, and the United States.
+The charts below track confirmed cases and deaths in the core Metro
+Atlanta counties, both in absolute and relative terms. The subsequent
+charts track new cases and deaths in Metro Atlanta, Georgia, and the
+United States.
 
 All data come from the New York Times’ ongoing
 [repository](https://github.com/nytimes/covid-19-data) of COVID-19 cases
@@ -16,7 +14,7 @@ It’s hard to know how to interpret these numbers since there are major
 known unknowns. Neither confirmed cases nor deaths can be said to be
 reliable counts of the true numbers.
 
-Data current as of June 11, 2020.
+Data current as of June 14, 2020.
 
 # Metro Atlanta
 
