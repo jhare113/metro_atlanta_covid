@@ -74,9 +74,9 @@ ui <- fluidPage(
             uiOutput("state_counties"),
             tags$p(textOutput("text_data")),
             tags$p("In the United States, there have been",
-                   usa_deaths,
+                   format(usa_deaths, big.mark = ","),
                    "deaths and",
-                   usa_cases,
+                   format(usa_cases, big.mark = ","),
                    "cases."),
             tags$img(width = "100%",
                      height = "auto",
@@ -304,17 +304,17 @@ server <- function(input, output) {
         total_county_cases <- current_county$`sum(cases)`[nrow(current_county)]
         
         paste("There have been ",
-              total_county_deaths,
+              format(total_county_deaths, big.mark = ","),
               " deaths out of ",
-              total_county_cases,
+              format(total_county_cases, big.mark = ","),
               " cases in ",
               input$county,
               ". ",
               input$state,
               " has seen ",    
-              total_state_deaths,
+              format(total_state_deaths, big.mark = ","),
               " deaths out of ",
-              total_state_cases,
+              format(total_state_cases, big.mark = ","),
               " cases.",
               sep = "")
     })
