@@ -35,6 +35,8 @@ usa_deaths <- usa$all_deaths[nrow(usa)]
 
 usa_cases <- usa$all_cases[nrow(usa)]
 
+#Define shared style
+
 # Define UI for application
 
 ui <- fluidPage(
@@ -100,6 +102,66 @@ ui <- fluidPage(
 
 server <- function(input, output) {
 
+    #create plots for county
+    
+    output$county_cases <- renderPlot({
+        counties %>%
+            filter(state == input$state) %>%
+            filter(county == input$county) %>%
+            group_by(date) %>%
+            summarise("all_cases" = sum(cases)) %>%
+            mutate("new_cases" = all_cases - lag(all_cases, default = 0)) %>%
+            mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
+                                                  fill = 0, align = "right")) %>%
+            
+            ggplot() +
+            geom_col(mapping = aes(x = date, y = new_cases, 
+                                   fill = "new daily cases")) +
+            geom_line(mapping = aes(x = date, y = weekly_mean_cases,
+                                    color = "7-day average")) +
+            labs(title = paste("New Cases in", input$county),
+                 caption = "Data from The New York Times",
+                 x = "Date",
+                 y = "New Cases") +
+            scale_color_manual(
+                values = c("7-day average" = "#800014")) +
+            scale_fill_manual(
+                values= c("new daily cases" = "gray40")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+        
+    })
+    
+    output$county_deaths <- renderPlot({
+        counties %>%
+            filter(state == input$state) %>%
+            filter(county == input$county) %>%
+            group_by(date) %>%
+            summarise("all_deaths" = sum(deaths)) %>%
+            mutate("new_deaths" = all_deaths - lag(all_deaths, default = 0)) %>%
+            mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
+                                                   fill = 0, align = "right")) %>%
+            ggplot() +
+            geom_col(mapping = aes(x = date, y = new_deaths, 
+                                   fill = "new daily deaths")) +
+            geom_line(mapping = aes(x = date, y = weekly_mean_deaths,
+                                    color = "7-day average")) +
+            labs(title = paste("New Deaths in", input$county),
+                 caption = "Data from The New York Times",
+                 x = "Date",
+                 y = "New Deaths") +
+            scale_color_manual(
+                values = c("7-day average" = "gray40")) +
+            scale_fill_manual(
+                values= c("new daily deaths" = "#800014")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+        
+    })    
+    
+    
 #Create plots for state        
     
     output$state_cases <- renderPlot({
@@ -111,12 +173,20 @@ server <- function(input, output) {
             mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
                                                   fill = 0, align = "right")) %>%
             ggplot() +
-            geom_col(mapping = aes(x = date, y = new_cases)) +
-            geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
+            geom_col(mapping = aes(x = date, y = new_cases,
+                                   fill = "new daily cases")) +
+            geom_line(mapping = aes(x = date, y = weekly_mean_cases, 
+                                    color = "7-day average")) +
             labs(title = paste("New Cases in", input$state),
                  caption = "Data from The New York Times",
                  x = "Date",
                  y = "New Cases") +
+            scale_color_manual(
+                values = c("7-day average" = "#800014")) +
+            scale_fill_manual(
+                values= c("new daily cases" = "gray40")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
             scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
     })
     
@@ -130,16 +200,65 @@ server <- function(input, output) {
                                                    fill = 0, align = "right")) %>%
         ggplot() +
             geom_col(mapping = aes(x = date, y = new_deaths, 
-                                   fill = "#800014"), show.legend = FALSE) +
-            geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
+                                   fill = "new daily deaths")) +
+            geom_line(mapping = aes(x = date, y = weekly_mean_deaths,
+                                    color = "7-day average")) +
             labs(title = paste("New Deaths in", input$state),
                  caption = "Data from The New York Times",
                  x = "Date",
                  y = "New Deaths") +
+            scale_color_manual(
+                values = c("7-day average" = "gray40")) +
+            scale_fill_manual(
+                values= c("new daily deaths" = "#800014")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
             scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
     })
     
-#create reactive county dropdown menu
+
+    #create plots for USA
+    
+    output$usa_cases <- renderPlot({
+        ggplot(usa) +
+            geom_col(mapping = aes(x = date, y = new_cases, 
+                                   fill = "new daily cases")) +
+            geom_line(mapping = aes(x = date, y = weekly_mean_cases,
+                                    color = "7-day average")) +
+            labs(title = "New Cases in the United States",
+                 caption = "Data from The New York Times",
+                 x = "Date",
+                 y = "New Cases") +
+            scale_color_manual(
+                values = c("7-day average" = "#800014")) +
+            scale_fill_manual(
+                values= c("new daily cases" = "gray40")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+    })
+    
+    output$usa_deaths <- renderPlot({
+        ggplot(usa) +
+            geom_col(mapping = aes(x = date, y = new_deaths, 
+                                   fill = "new daily deaths")) +
+            geom_line(mapping = aes(x = date, y = weekly_mean_deaths,
+                                    color = "7-day average")) +
+            labs(title = "New Deaths in the United States",
+                 caption = "Data from The New York Times",
+                 x = "Date",
+                 y = "New Deaths") +
+            scale_color_manual(
+                values = c("7-day average" = "gray40")) +
+            scale_fill_manual(
+                values= c("new daily deaths" = "#800014")) +
+            theme(legend.title = element_blank(),
+                  legend.position = "top") +
+            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+    })
+    
+    
+    #create reactive county dropdown menu
     
     output$state_counties <- renderUI({
         counties_by_state <- counties %>%
@@ -153,7 +272,7 @@ server <- function(input, output) {
     })
     
     
-#Create text output about total values
+    #Create text output about total values
     
     output$text_data <- renderText({
         current_state <- counties %>% 
@@ -200,77 +319,7 @@ server <- function(input, output) {
               sep = "")
     })
     output$state <- renderText(input$state)
-    output$county <-renderText(input$county)
-    
-#create plots for county
-    
-    output$county_cases <- renderPlot({
-        counties %>%
-            filter(state == input$state) %>%
-            filter(county == input$county) %>%
-            group_by(date) %>%
-            summarise("all_cases" = sum(cases)) %>%
-            mutate("new_cases" = all_cases - lag(all_cases, default = 0)) %>%
-            mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
-                                                  fill = 0, align = "right")) %>%
-            
-            ggplot() +
-            geom_col(mapping = aes(x = date, y = new_cases)) +
-            geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
-            labs(title = paste("New Cases in", input$county),
-                 caption = "Data from The New York Times",
-                 x = "Date",
-                 y = "New Cases") +
-            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
-        
-    })
-            
-    output$county_deaths <- renderPlot({
-        counties %>%
-            filter(state == input$state) %>%
-            filter(county == input$county) %>%
-            group_by(date) %>%
-            summarise("all_deaths" = sum(deaths)) %>%
-            mutate("new_deaths" = all_deaths - lag(all_deaths, default = 0)) %>%
-            mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
-                                                   fill = 0, align = "right")) %>%
-            ggplot() +
-            geom_col(mapping = aes(x = date, y = new_deaths, fill = "#800014"),
-                     show.legend = FALSE) +
-            geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
-            labs(title = paste("New Deaths in", input$county),
-                 caption = "Data from The New York Times",
-                 x = "Date",
-                 y = "New Deaths") +
-            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
-            
-    })
-            
-    
-#create plots for USA
-    
-    output$usa_cases <- renderPlot({
-        ggplot(usa) +
-            geom_col(mapping = aes(x = date, y = new_cases)) +
-            geom_line(mapping = aes(x = date, y = weekly_mean_cases)) +
-            labs(title = "New Cases in the United States",
-                 caption = "Data from The New York Times",
-                 x = "Date",
-                 y = "New Cases") +
-            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
-    })
-    
-    output$usa_deaths <- renderPlot({
-        ggplot(usa) +
-            geom_col(mapping = aes(x = date, y = new_deaths, 
-                                   fill = "#800014"), show.legend = FALSE) +
-            geom_line(mapping = aes(x = date, y = weekly_mean_deaths)) +
-            labs(title = "New Deaths in the United States",
-                 caption = "Data from The New York Times",
-                 x = "Date",
-                 y = "New Deaths") +
-            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
-    })
+    output$county <-renderText(input$county)    
         
 }
 
