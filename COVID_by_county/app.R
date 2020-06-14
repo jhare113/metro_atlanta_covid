@@ -59,7 +59,7 @@ ui <- fluidPage(
     reliable counts of the true numbers."),
     
     tags$p("Data current as of",
-    format(Sys.time(), '%B %d, %Y')),
+    format(Sys.time(), '%B %d, %Y.')),
     tags$hr(),
 
     # Sidebar with dropdown menus to choose state and county 
