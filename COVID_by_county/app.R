@@ -149,7 +149,7 @@ server <- function(input, output) {
                  x = "Date",
                  y = "New Deaths") +
             scale_color_manual(
-                values = c("7-day average" = "gray40")) +
+                values = c("7-day average" = "black")) +
             scale_fill_manual(
                 values= c("new daily deaths" = "#800014")) +
             theme(legend.title = element_blank(),
@@ -205,7 +205,7 @@ server <- function(input, output) {
                  x = "Date",
                  y = "New Deaths") +
             scale_color_manual(
-                values = c("7-day average" = "gray40")) +
+                values = c("7-day average" = "black")) +
             scale_fill_manual(
                 values= c("new daily deaths" = "#800014")) +
             theme(legend.title = element_blank(),
@@ -246,7 +246,7 @@ server <- function(input, output) {
                  x = "Date",
                  y = "New Deaths") +
             scale_color_manual(
-                values = c("7-day average" = "gray40")) +
+                values = c("7-day average" = "black")) +
             scale_fill_manual(
                 values= c("new daily deaths" = "#800014")) +
             theme(legend.title = element_blank(),
