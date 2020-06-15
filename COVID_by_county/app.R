@@ -35,6 +35,8 @@ usa_deaths <- usa$all_deaths[nrow(usa)]
 
 usa_cases <- usa$all_cases[nrow(usa)]
 
+
+
 #Define shared style
 
 # Define UI for application
@@ -97,7 +99,8 @@ ui <- fluidPage(
                     tags$h3("United States"),
                     plotOutput("usa_cases"),
                     plotOutput("usa_deaths")
-                    )
+                    ),
+                selected = "United States"
                 )
             )
         )
@@ -222,6 +225,22 @@ server <- function(input, output) {
     })
     
 
+
+    
+    
+    #create reactive county dropdown menu
+    
+    output$state_counties <- renderUI({
+        counties_by_state <- counties %>%
+            filter(state == input$state) %>%
+            arrange(county)
+        selectInput("county",
+                    label = "County:",
+                    choices = counties_by_state$county,
+                    selected = 1
+        )
+    })
+    
     #create plots for USA
     
     output$usa_cases <- renderPlot({
@@ -260,20 +279,6 @@ server <- function(input, output) {
             theme(legend.title = element_blank(),
                   legend.position = "top") +
             scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
-    })
-    
-    
-    #create reactive county dropdown menu
-    
-    output$state_counties <- renderUI({
-        counties_by_state <- counties %>%
-            filter(state == input$state) %>%
-            arrange(county)
-        selectInput("county",
-                    label = "County:",
-                    choices = counties_by_state$county,
-                    selected = 1
-        )
     })
     
     
