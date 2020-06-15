@@ -1,4 +1,5 @@
 library(shiny)
+library(shinythemes)
 library(tidyverse)
 library(zoo)
 
@@ -41,7 +42,7 @@ usa_cases <- usa$all_cases[nrow(usa)]
 
 # Define UI for application
 
-ui <- fluidPage(
+ui <- fluidPage(theme = shinytheme("journal"),
 
     # Application title
     titlePanel("COVID-19 Data by State and County"),
