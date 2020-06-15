@@ -82,18 +82,25 @@ ui <- fluidPage(
 
         # Show a plot of the generated cases
         mainPanel(
-           tags$h3(textOutput("county")),
-           plotOutput("county_cases"),
-           plotOutput("county_deaths"),
-           tags$h3(textOutput("state")),
-           plotOutput("state_cases"),
-           plotOutput("state_deaths"),
+            tabsetPanel(
+           tabPanel("County", 
+                    tags$h3(textOutput("county")),
+                    plotOutput("county_cases"),
+                    plotOutput("county_deaths")
+                    ),
+           tabPanel("State",
+                    tags$h3(textOutput("state")),
+                    plotOutput("state_cases"),
+                    plotOutput("state_deaths")
+                    ),
+           tabPanel("United States",
            tags$h3("United States"),
-           plotOutput("usa_cases"),
-           plotOutput("usa_deaths")
-        )
-    )
-)
+                    plotOutput("usa_cases"),
+                    plotOutput("usa_deaths")
+                    )
+                    )
+                    )
+))
 
 # Define server logic required to render plot
 
