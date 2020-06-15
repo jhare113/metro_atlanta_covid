@@ -43,24 +43,8 @@ ui <- fluidPage(
 
     # Application title
     titlePanel("COVID-19 Data by State and County"),
-    tags$p("The charts below track new cases and deaths in the state and county 
-    of your choice, as well as in the United States as a whole."),
-    
-    tags$p("All data come from the New York Times' ongoing",
-           
-    tags$a(href = "https://github.com/nytimes/covid-19-data", "repository"),
-    "of COVID-19 cases and deaths in the United States."),
-    
-    tags$p("It's hard to know how to interpret these numbers since there are 
-    major known unknowns. Neither confirmed cases nor deaths can be said to be 
-    reliable counts of the true numbers."),
-    
-    tags$p("Data current as of",
-    format(Sys.time(), '%B %d, %Y.')),
-    tags$hr(),
 
     # Sidebar with dropdown menus to choose state and county 
-    
     sidebarLayout(
         sidebarPanel(
             selectInput("state",
@@ -77,30 +61,47 @@ ui <- fluidPage(
                    "cases."),
             tags$img(width = "100%",
                      height = "auto",
-                     src = "23312.jpg")
-            ),
+                     src = "23312.jpg"),
+            tags$br(),
+            tags$br(),
+            tags$p("These charts track new cases and deaths in the state and county 
+                of your choice, as well as in the United States as a whole."),
+            
+            tags$p("All data come from the New York Times' ongoing",
+                   
+                   tags$a(href = "https://github.com/nytimes/covid-19-data", "repository"),
+                   "of COVID-19 cases and deaths in the United States."),
+            
+            tags$p("It's hard to know how to interpret these numbers since there are 
+    major known unknowns. Neither confirmed cases nor deaths can be said to be 
+    reliable counts of the true numbers."),
+            
+            tags$p("Data current as of",
+                   format(Sys.time(), '%B %d, %Y.')),
+            tags$hr()),
 
         # Show a plot of the generated cases
         mainPanel(
             tabsetPanel(
-           tabPanel("County", 
+                tabPanel("County", 
                     tags$h3(textOutput("county")),
                     plotOutput("county_cases"),
                     plotOutput("county_deaths")
                     ),
-           tabPanel("State",
+                tabPanel("State",
                     tags$h3(textOutput("state")),
                     plotOutput("state_cases"),
                     plotOutput("state_deaths")
                     ),
-           tabPanel("United States",
-           tags$h3("United States"),
+                tabPanel("United States",
+                    tags$h3("United States"),
                     plotOutput("usa_cases"),
                     plotOutput("usa_deaths")
                     )
-                    )
-                    )
-))
+                )
+            )
+        )
+    )
 
 # Define server logic required to render plot
 
