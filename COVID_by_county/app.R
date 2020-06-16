@@ -77,9 +77,6 @@ death_chart <- function(region) {
 }
 
 
-
-#Define shared style
-
 # Define UI for application
 
 ui <- fluidPage(theme = shinytheme("journal"),
@@ -151,7 +148,7 @@ ui <- fluidPage(theme = shinytheme("journal"),
 
 server <- function(input, output) {
 
-    #create plots for county
+#create plots for county
     
     output$county_cases <- renderPlot({
         counties %>%
@@ -205,10 +202,7 @@ server <- function(input, output) {
     })
     
 
-
-    
-    
-    #create reactive county dropdown menu
+#create reactive county dropdown menu
     
     output$state_counties <- renderUI({
         counties_by_state <- counties %>%
@@ -221,7 +215,8 @@ server <- function(input, output) {
         )
     })
     
-    #create plots for USA
+
+#create plots for USA
     
     output$usa_cases <- renderPlot({
         case_chart(usa)
@@ -232,7 +227,7 @@ server <- function(input, output) {
     })
     
     
-    #Create text output about total values
+#Create text output about total values
     
     output$text_data <- renderText({
         current_state <- counties %>% 
