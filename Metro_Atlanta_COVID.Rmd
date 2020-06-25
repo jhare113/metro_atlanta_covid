@@ -9,6 +9,7 @@ output:
 
 #Load the needed packages
 
+
 library(tidyverse)
 library(zoo)
 
@@ -23,92 +24,131 @@ knitr::opts_chunk$set(
 #Grab the raw data from the NY Times
 
 counties <- read_csv(
-        "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv", 
-                     col_types = cols(
-        date = col_date(format = ""),
-        county = col_character(),
-        state = col_character(),
-        fips = col_character(),
-        cases = col_double(),
-        deaths = col_double()
-))
+  "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv",
+  col_types = cols(
+    date = col_date(format = ""),
+    county = col_character(),
+    state = col_character(),
+    fips = col_character(),
+    cases = col_double(),
+    deaths = col_double()
+  )
+)
 
 #Calculate the total number of cases and deaths in the US
 
 usa <- counties %>%
-        group_by(date) %>%
-        summarise("all_cases" = sum(cases),
-                  "all_deaths" = sum(deaths)) %>%
-        mutate("new_deaths" = all_deaths - lag(all_deaths, default = 0),
-               "new_cases" = all_cases - lag(all_cases, default = 0)) %>%
-        mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
-                                               fill = 0, align = "right")) %>%
-        mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
-                                               fill = 0, align = "right"))
+  group_by(date) %>%
+  summarise("all_cases" = sum(cases),
+            "all_deaths" = sum(deaths)) %>%
+  mutate(
+    "new_deaths" = all_deaths - lag(all_deaths, default = 0),
+    "new_cases" = all_cases - lag(all_cases, default = 0)
+  ) %>%
+  mutate("weekly_mean_deaths" = rollmean(
+    new_deaths,
+    7,
+    na.rm = TRUE,
+    fill = 0,
+    align = "right"
+  )) %>%
+  mutate("weekly_mean_cases" = rollmean(
+    new_cases,
+    7,
+    na.rm = TRUE,
+    fill = 0,
+    align = "right"
+  ))
 
 #Calculate the total number of cases and deaths in Georgia
 
 georgia <- counties %>%
-        filter(state == "Georgia") %>%
-        group_by(date) %>%
-        summarise("all_cases" = sum(cases),
-                  "all_deaths" = sum(deaths)) %>%
-        mutate("new_deaths" = all_deaths - lag(all_deaths, default = 0),
-               "new_cases" = all_cases - lag(all_cases, default = 0)) %>%
-        mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
-                                               fill = 0, align = "right")) %>%
-        mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
-                                               fill = 0, align = "right"))
+  filter(state == "Georgia") %>%
+  group_by(date) %>%
+  summarise("all_cases" = sum(cases),
+            "all_deaths" = sum(deaths)) %>%
+  mutate(
+    "new_deaths" = all_deaths - lag(all_deaths, default = 0),
+    "new_cases" = all_cases - lag(all_cases, default = 0)
+  ) %>%
+  mutate("weekly_mean_deaths" = rollmean(
+    new_deaths,
+    7,
+    na.rm = TRUE,
+    fill = 0,
+    align = "right"
+  )) %>%
+  mutate("weekly_mean_cases" = rollmean(
+    new_cases,
+    7,
+    na.rm = TRUE,
+    fill = 0,
+    align = "right"
+  ))
 
 #Filter down to the five core metro Atlanta counties
 
 metro_atl <- counties %>%
-        filter(state == "Georgia" & (county == "DeKalb" | county == "Gwinnett" | 
-                county == "Fulton" | county == "Cobb" | county == "Clayton"))
+  filter(
+    state == "Georgia" & (
+      county == "DeKalb" | county == "Gwinnett" |
+        county == "Fulton" |
+        county == "Cobb" | county == "Clayton"
+    )
+  )
 
 #Add the census counts for the metro Atlanta counties
 
-atl_counties_population <- enframe(c("DeKalb" = 756558, "Gwinnett" = 927781, 
-        "Fulton" = 1050114, "Cobb" = 756865, "Clayton" = 289615), 
-        name = "county", value = "county_population")
+atl_counties_population <-
+  enframe(
+    c(
+      "DeKalb" = 756558,
+      "Gwinnett" = 927781,
+      "Fulton" = 1050114,
+      "Cobb" = 756865,
+      "Clayton" = 289615
+    ),
+    name = "county",
+    value = "county_population"
+  )
 
 #Define functions to draw plots
 
 case_chart <- function(region, title) {
   ggplot(region, mapping = aes(x = date)) +
-                geom_col(mapping = aes(y = new_cases, fill = "new daily cases")) +
-                geom_line(mapping = aes(y = weekly_mean_cases, 
-                                        color = "7-day average")) +
-                labs(title = title,
-                    caption = "Data from The New York Times",
-                    x = "Date",
-                    y = "New Cases") +
-                scale_color_manual(
-                    values = c("7-day average" = "#800014")) +
-                scale_fill_manual(
-                    values= c("new daily cases" = "gray40")) +
-                theme(legend.title = element_blank(),
-                  legend.position = "top") +
-                scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+    geom_col(mapping = aes(y = new_cases, fill = "new daily cases")) +
+    geom_line(mapping = aes(y = weekly_mean_cases,
+                            color = "7-day average")) +
+    labs(
+      title = title,
+      caption = "Data from The New York Times",
+      x = "Date",
+      y = "New Cases"
+    ) +
+    scale_color_manual(values = c("7-day average" = "#800014")) +
+    scale_fill_manual(values = c("new daily cases" = "gray40")) +
+    theme(legend.title = element_blank(),
+          legend.position = "top") +
+    scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 }
 
 death_chart <- function(region, title) {
-                ggplot(region, mapping = aes(x = date)) +
-                geom_col(mapping = aes(y = new_deaths, 
-                                       fill = "new daily deaths")) +
-                geom_line(mapping = aes(y = weekly_mean_deaths, 
-                                        color = "7-day average")) +
-                labs(title = title,
-                    caption = "Data from The New York Times",
-                    x = "Date",
-                    y = "New Deaths") +
-            scale_color_manual(
-                values = c("7-day average" = "black")) +
-            scale_fill_manual(
-                values= c("new daily deaths" = "#800014")) +
-            theme(legend.title = element_blank(),
-                  legend.position = "top") +
-            scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+  ggplot(region, mapping = aes(x = date)) +
+    geom_col(mapping = aes(y = new_deaths,
+                           fill = "new daily deaths")) +
+    geom_line(mapping = aes(y = weekly_mean_deaths,
+                            color = "7-day average")) +
+    labs(
+      title = title,
+      caption = "Data from The New York Times",
+      x = "Date",
+      y = "New Deaths"
+    ) +
+    scale_color_manual(values = c("7-day average" = "black")) +
+    scale_fill_manual(values = c("new daily deaths" = "#800014")) +
+    theme(legend.title = element_blank(),
+          legend.position = "top") +
+    scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 }
 ```
 
@@ -129,35 +169,38 @@ Data current as of `r format(Sys.time(), '%B %d, %Y')`.
 # Metro Atlanta
 
 ```{r atl_cases_absolute}
-
 #Visualize Metro Atlanta county case data in absolute terms
 
-        ggplot(data = metro_atl) +
-        geom_line(mapping = aes(x = date, y = cases, color = county))+
-        labs(title = "Total Cases by County",
-             caption = "Data from The New York Times",
-             color = "County",
-             x = "Date",
-             y = "Total Cases") +
-        theme(legend.position = c(.15, .7)) +
-        scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+ggplot(data = metro_atl) +
+  geom_line(mapping = aes(x = date, y = cases, color = county)) +
+  labs(
+    title = "Total Cases by County",
+    caption = "Data from The New York Times",
+    color = "County",
+    x = "Date",
+    y = "Total Cases"
+  ) +
+  theme(legend.position = c(.15, .7)) +
+  scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 
 ```{r atl_deaths_absolute}
-
 #Visualize Metro Atlanta county death data in absolute terms
 
-        ggplot(data = metro_atl, mapping = aes(x = date, y = deaths, 
-                color = county)) +
-        geom_line() +
-        labs(title = "Total Deaths by County",
-             caption = "Data from The New York Times",
-             color = "County",
-             x = "Date",
-             y = "Total Deaths") +
-        theme(legend.position = c(.15, .7)) +
-        scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+ggplot(data = metro_atl,
+       mapping = aes(x = date, y = deaths,
+                     color = county)) +
+  geom_line() +
+  labs(
+    title = "Total Deaths by County",
+    caption = "Data from The New York Times",
+    color = "County",
+    x = "Date",
+    y = "Total Deaths"
+  ) +
+  theme(legend.position = c(.15, .7)) +
+  scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 
@@ -166,17 +209,19 @@ Data current as of `r format(Sys.time(), '%B %d, %Y')`.
 #Visualize Metro Atlanta County cases in relative terms
 
 metro_atl %>%
-        mutate(cases_per_thousand = (cases / 
-                atl_counties_population$county_population) * 1000) %>%
-ggplot(mapping = aes(x = date, y = cases_per_thousand, color = county)) +
-        geom_line() +
-        labs(title = "Cases per Thousand by County",
-             caption = "Data from The New York Times",
-             color = "County",
-             x = "Date",
-             y = "Cases per Thousand") +
-        theme(legend.position = c(.15, .7)) +
-        scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+  mutate(cases_per_thousand = (cases /
+                                 atl_counties_population$county_population) * 1000) %>%
+  ggplot(mapping = aes(x = date, y = cases_per_thousand, color = county)) +
+  geom_line() +
+  labs(
+    title = "Cases per Thousand by County",
+    caption = "Data from The New York Times",
+    color = "County",
+    x = "Date",
+    y = "Cases per Thousand"
+  ) +
+  theme(legend.position = c(.15, .7)) +
+  scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 ```
 
 ```{r alt_relative_deaths}
@@ -184,17 +229,19 @@ ggplot(mapping = aes(x = date, y = cases_per_thousand, color = county)) +
 #Visualize Metro Atlanta county deaths in relative terms
 
 metro_atl %>%
-        mutate(deaths_per_thousand = (deaths / 
-                atl_counties_population$county_population) * 1000) %>%
-ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
-        geom_line() +
-        labs(title = "Deaths per Thousand by County",
-             caption = "Data from The New York Times",
-             color = "County",
-             x = "Date",
-             y = "Deaths per Thousand") +
-        theme(legend.position = c(.15, .7)) +
-        scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
+  mutate(deaths_per_thousand = (deaths /
+                                  atl_counties_population$county_population) * 1000) %>%
+  ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
+  geom_line() +
+  labs(
+    title = "Deaths per Thousand by County",
+    caption = "Data from The New York Times",
+    color = "County",
+    x = "Date",
+    y = "Deaths per Thousand"
+  ) +
+  theme(legend.position = c(.15, .7)) +
+  scale_x_date(limits = as.Date(c("2020-03-01", Sys.time())))
 
 ```
 
@@ -202,28 +249,38 @@ ggplot(mapping = aes(x = date, y = deaths_per_thousand, color = county)) +
 
 #Visualize new cases for entire metro area
 
-        metro_atl %>%
-                group_by(date) %>%
-                summarise("all_cases" = sum(cases)) %>%
-                mutate("new_cases" = 
-                               all_cases - lag(all_cases, default = 0)) %>%
-                mutate("weekly_mean_cases" = rollmean(new_cases, 7, na.rm = TRUE, 
-                                               fill = 0, align = "right")) %>%
-                case_chart(., "New Cases in Metro Atlanta")
+metro_atl %>%
+  group_by(date) %>%
+  summarise("all_cases" = sum(cases)) %>%
+  mutate("new_cases" =
+           all_cases - lag(all_cases, default = 0)) %>%
+  mutate("weekly_mean_cases" = rollmean(
+    new_cases,
+    7,
+    na.rm = TRUE,
+    fill = 0,
+    align = "right"
+  )) %>%
+  case_chart(., "New Cases in Metro Atlanta")
 ```
 
 ```{r atl_new_deaths}
 
 #Visualize new deaths for entire metro area
 
-        metro_atl %>%
-                group_by(date) %>%
-                summarise("all_deaths" = sum(deaths)) %>%
-                mutate("new_deaths" = 
-                               all_deaths - lag(all_deaths, default = 0)) %>%
-                mutate("weekly_mean_deaths" = rollmean(new_deaths, 7, na.rm = TRUE, 
-                                               fill = 0, align = "right")) %>%
-                death_chart(., "New Deaths in Metro Atlanta")
+metro_atl %>%
+  group_by(date) %>%
+  summarise("all_deaths" = sum(deaths)) %>%
+  mutate("new_deaths" =
+           all_deaths - lag(all_deaths, default = 0)) %>%
+  mutate("weekly_mean_deaths" = rollmean(
+    new_deaths,
+    7,
+    na.rm = TRUE,
+    fill = 0,
+    align = "right"
+  )) %>%
+  death_chart(., "New Deaths in Metro Atlanta")
 ```
 
 
