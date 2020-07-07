@@ -8,7 +8,8 @@ output:
 
 library(tidyverse)
 
-#Import and tidy data from DeKalb County Board of Health
+#Import and tidy data from DeKalb County Board of Health 
+#https://www.dekalbhealth.net/covid-19dekalb/
 
 dekalb <- read_lines("Dekalb.txt", skip_empty_rows = TRUE)
 dekalb <- dekalb[dekalb != "\t"]
@@ -28,6 +29,13 @@ zcta <-
                            ".....$")) %>%
   select(ZIP, `Estimate!!Households!!Median income (dollars)`)
 
+#Import population data from 2010 Census
+
+zcta_pop <- read_csv("DECENNIALSF12010.P1_data_with_overlays_2020-07-06T171622.csv",
+                     skip = 1) %>%
+  mutate(ZIP = str_extract(`Geographic Area Name`, "\\d\\d\\d\\d\\d")) %>%
+  select(ZIP, total_population = Total)
+
 #Join ACS data with local COVID-19 data and specify column types
 
 dekalb <- dekalb %>%
@@ -38,19 +46,29 @@ dekalb <- dekalb %>%
   ) %>%
   select(!(`Estimate!!Households!!Median income (dollars)`))
 
+#Add population data to Dekalb tibble and calculate per capita data
+
+dekalb <- dekalb %>%
+  inner_join(zcta_pop) %>%
+  mutate(cases_per_thousand = current_count / (total_population / 1000))
+
+#clear redundant tibbles from memory
+
+remove(zcta)
+remove(zcta_pop)
 ```
 ```{r}
 #Now let's make a plot to see if there is a correlation between income and disease
 
 ggplot(data = dekalb,
-       mapping = aes(median_income, current_count)) +
+       mapping = aes(median_income, cases_per_thousand)) +
   geom_point() +
   geom_smooth()
 ```
 ```{r}
 #It looks like there's a correlation. Let's try modeling it
 
-mod_covid <- lm(current_count ~ median_income, dekalb)
+mod_covid <- lm(cases_per_thousand ~ median_income, dekalb)
 summary(mod_covid)
 ```
 

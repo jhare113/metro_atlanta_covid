@@ -19,7 +19,8 @@ library(tidyverse)
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
-#Import and tidy data from DeKalb County Board of Health
+#Import and tidy data from DeKalb County Board of Health 
+#https://www.dekalbhealth.net/covid-19dekalb/
 
 dekalb <- read_lines("Dekalb.txt", skip_empty_rows = TRUE)
 dekalb <- dekalb[dekalb != "\t"]
@@ -73,6 +74,22 @@ zcta <-
     ## See problems(...) for more details.
 
 ``` r
+#Import population data from 2010 Census
+
+zcta_pop <- read_csv("DECENNIALSF12010.P1_data_with_overlays_2020-07-06T171622.csv",
+                     skip = 1) %>%
+  mutate(ZIP = str_extract(`Geographic Area Name`, "\\d\\d\\d\\d\\d")) %>%
+  select(ZIP, total_population = Total)
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   id = col_character(),
+    ##   `Geographic Area Name` = col_character(),
+    ##   Total = col_double()
+    ## )
+
+``` r
 #Join ACS data with local COVID-19 data and specify column types
 
 dekalb <- dekalb %>%
@@ -87,10 +104,27 @@ dekalb <- dekalb %>%
     ## Joining, by = "ZIP"
 
 ``` r
+#Add population data to Dekalb tibble and calculate per capita data
+
+dekalb <- dekalb %>%
+  inner_join(zcta_pop) %>%
+  mutate(cases_per_thousand = current_count / (total_population / 1000))
+```
+
+    ## Joining, by = "ZIP"
+
+``` r
+#clear redundant tibbles from memory
+
+remove(zcta)
+remove(zcta_pop)
+```
+
+``` r
 #Now let's make a plot to see if there is a correlation between income and disease
 
 ggplot(data = dekalb,
-       mapping = aes(median_income, current_count)) +
+       mapping = aes(median_income, cases_per_thousand)) +
   geom_point() +
   geom_smooth()
 ```
@@ -102,25 +136,25 @@ ggplot(data = dekalb,
 ``` r
 #It looks like there's a correlation. Let's try modeling it
 
-mod_covid <- lm(current_count ~ median_income, dekalb)
+mod_covid <- lm(cases_per_thousand ~ median_income, dekalb)
 summary(mod_covid)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = current_count ~ median_income, data = dekalb)
+    ## lm(formula = cases_per_thousand ~ median_income, data = dekalb)
     ## 
     ## Residuals:
-    ##      Min       1Q   Median       3Q      Max 
-    ## -225.870 -101.662   -7.452   86.598  235.686 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4.9186 -2.1517 -0.8885  1.9821  7.8445 
     ## 
     ## Coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)   406.226687  81.101877   5.009 2.48e-05 ***
-    ## median_income  -0.003351   0.001168  -2.870  0.00759 ** 
+    ## (Intercept)    1.255e+01  2.153e+00   5.829 2.55e-06 ***
+    ## median_income -9.295e-05  3.099e-05  -2.999  0.00552 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 126.7 on 29 degrees of freedom
-    ## Multiple R-squared:  0.2212, Adjusted R-squared:  0.1943 
-    ## F-statistic: 8.235 on 1 and 29 DF,  p-value: 0.007591
+    ## Residual standard error: 3.363 on 29 degrees of freedom
+    ## Multiple R-squared:  0.2367, Adjusted R-squared:  0.2104 
+    ## F-statistic: 8.993 on 1 and 29 DF,  p-value: 0.005516
