@@ -7,6 +7,3 @@ The first product of this project is an [R Markdown document](https://github.com
 The second product of this project is a [Shiny web app](https://jamesphare.shinyapps.io/COVID_by_county/), which visualizes new case and death data for the entire United States, with a focus on county-level data in the context of state and national data.
 
 The third product of this project is [work in progress](https://github.com/jamesphare/metro_atlanta_covid/blob/master/DeKalb_by_Zip.md) exploring the relation between median income by zipcode and cases of COVID-19 in DeKalb County, Georgia.  
-
-All data come from the New York Times' ongoing [repository](https://github.com/nytimes/covid-19-data) of COVID-19 cases and
-deaths in the United States.
