@@ -19,6 +19,9 @@ library(tidyverse)
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
+library(modelr)
+library(ggrepel)
+
 #Import and tidy data from DeKalb County Board of Health 
 #https://www.dekalbhealth.net/covid-19dekalb/
 
@@ -158,3 +161,36 @@ summary(mod_covid)
     ## Residual standard error: 3.363 on 29 degrees of freedom
     ## Multiple R-squared:  0.2367, Adjusted R-squared:  0.2104 
     ## F-statistic: 8.993 on 1 and 29 DF,  p-value: 0.005516
+
+``` r
+anova(mod_covid)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: cases_per_thousand
+    ##               Df Sum Sq Mean Sq F value   Pr(>F)   
+    ## median_income  1 101.73 101.733  8.9929 0.005516 **
+    ## Residuals     29 328.07  11.313                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+#Now let's make a prettier plot to communicate these results
+
+ggplot(data = dekalb,
+       mapping = aes(median_income, cases_per_thousand)) +
+  geom_point() +
+  geom_smooth(mapping = aes(),
+              method = "lm",
+              formula = y ~ x) +
+  geom_text_repel(aes(label = ZIP), alpha = .6) +
+  labs(title = "Geographical Spread of COVID-19 in DeKalb County",
+       subtitle = "Lower Median Income Associated with Higher Rates",
+       caption = "Sources: DeKalb County Board of Health, U.S. Census Bureau",
+       x = "Median Income by ZIP Code",
+       y = "COVID-19 Cases per Thousand"
+  )
+```
+
+![](DeKalb_by_Zip_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->

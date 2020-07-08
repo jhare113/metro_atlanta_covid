@@ -7,6 +7,8 @@ output:
 #Load required libraries
 
 library(tidyverse)
+library(modelr)
+library(ggrepel)
 
 #Import and tidy data from DeKalb County Board of Health 
 #https://www.dekalbhealth.net/covid-19dekalb/
@@ -71,4 +73,23 @@ ggplot(data = dekalb,
 mod_covid <- lm(cases_per_thousand ~ median_income, dekalb)
 summary(mod_covid)
 ```
+```{r}
+anova(mod_covid)
+```
+```{r}
+#Now let's make a prettier plot to communicate these results
 
+ggplot(data = dekalb,
+       mapping = aes(median_income, cases_per_thousand)) +
+  geom_point() +
+  geom_smooth(mapping = aes(),
+              method = "lm",
+              formula = y ~ x) +
+  geom_text_repel(aes(label = ZIP), alpha = .6) +
+  labs(title = "Geographical Spread of COVID-19 in DeKalb County",
+       subtitle = "Lower Median Income Associated with Higher Rates",
+       caption = "Sources: DeKalb County Board of Health, U.S. Census Bureau",
+       x = "Median Income by ZIP Code",
+       y = "COVID-19 Cases per Thousand"
+  )
+```
