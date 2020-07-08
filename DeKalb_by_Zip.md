@@ -1,6 +1,8 @@
 DeKalb County by Zipcode
 ================
 
+July 8, 2020
+
 ``` r
 #Load required libraries
 
@@ -149,18 +151,18 @@ summary(mod_covid)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9186 -2.1517 -0.8885  1.9821  7.8445 
+    ## -7.3393 -2.5224 -0.0035  2.2704  8.6074 
     ## 
     ## Coefficients:
     ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)    1.255e+01  2.153e+00   5.829 2.55e-06 ***
-    ## median_income -9.295e-05  3.099e-05  -2.999  0.00552 ** 
+    ## (Intercept)    1.471e+01  2.378e+00   6.186 5.58e-07 ***
+    ## median_income -1.146e-04  3.405e-05  -3.366  0.00195 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 3.363 on 29 degrees of freedom
-    ## Multiple R-squared:  0.2367, Adjusted R-squared:  0.2104 
-    ## F-statistic: 8.993 on 1 and 29 DF,  p-value: 0.005516
+    ## Residual standard error: 3.908 on 33 degrees of freedom
+    ## Multiple R-squared:  0.2556, Adjusted R-squared:  0.233 
+    ## F-statistic: 11.33 on 1 and 33 DF,  p-value: 0.001949
 
 ``` r
 anova(mod_covid)
@@ -170,8 +172,8 @@ anova(mod_covid)
     ## 
     ## Response: cases_per_thousand
     ##               Df Sum Sq Mean Sq F value   Pr(>F)   
-    ## median_income  1 101.73 101.733  8.9929 0.005516 **
-    ## Residuals     29 328.07  11.313                    
+    ## median_income  1 173.02 173.022   11.33 0.001949 **
+    ## Residuals     33 503.94  15.271                    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
