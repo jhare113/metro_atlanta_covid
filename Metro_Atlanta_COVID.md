@@ -14,7 +14,7 @@ It’s hard to know how to interpret these numbers since there are major
 known unknowns. Neither confirmed cases nor deaths can be said to be
 reliable counts of the true numbers.
 
-Data current as of June 25, 2020.
+Data current as of July 09, 2020.
 
 # Metro Atlanta
 
