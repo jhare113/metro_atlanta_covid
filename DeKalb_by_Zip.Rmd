@@ -1,17 +1,22 @@
 ---
-title: "DeKalb County by Zipcode"
+title: "DeKalb County by Zipcode Methodology"
 output:
   github_document: default
 ---
-July 8, 2020
+July 9, 2020
 
-```{r}
+```{r setup}
 #Load required libraries
 
 library(tidyverse)
 library(modelr)
 library(ggrepel)
 
+```
+
+The [DeKalb County Board of Health](https://www.dekalbhealth.net/covid-19dekalb/) has released data on local COVID-19 cases, sorted by ZIP Code. This information has not been shared in a format that is suitable for data analysis, so I copied-and-pasted the raw numbers into a text file, which I then imported and tidied. 
+
+```{r}
 #Import and tidy data from DeKalb County Board of Health 
 #https://www.dekalbhealth.net/covid-19dekalb/
 
@@ -19,16 +24,20 @@ dekalb <- read_lines("Dekalb.txt", skip_empty_rows = TRUE)
 dekalb <- dekalb[dekalb != "\t"]
 dekalb <- dekalb[6:(length(dekalb))]
 dekalb <- matrix(dekalb, ncol = 5, byrow = TRUE) %>%
-  as_tibble() %>%
-  select(V1, V3) %>%
-  rename(ZIP = V1,
-         current_count = V3,)
+  as_tibble(.name_repair = "unique") %>%
+  select(...1, ...3) %>%
+  rename(ZIP = ...1,
+         current_count = ...3,)
+```
 
+The U.S. Census Bureau's most recent American Community Survey 5-year estimate, released in 2018, provides estimates at the ZIP Code level (or rather ZCTA) for a variety of statistics on the U.S. population. The 2010 Census provides population counts for each ZCTA, information we need to calculate cases per capita.
+
+```{r}
 #Import data from US Census American Community Survey 2018 5-year estimate
 
 zcta <-
   read_csv("ACSST5Y2018.S1901_data_with_overlays_2020-07-04T190723.csv",
-           skip = 1) %>%
+           skip = 1, na = "null") %>%
   mutate(ZIP = str_extract(`Geographic Area Name`,
                            ".....$")) %>%
   select(ZIP, `Estimate!!Households!!Median income (dollars)`)
@@ -39,7 +48,11 @@ zcta_pop <- read_csv("DECENNIALSF12010.P1_data_with_overlays_2020-07-06T171622.c
                      skip = 1) %>%
   mutate(ZIP = str_extract(`Geographic Area Name`, "\\d\\d\\d\\d\\d")) %>%
   select(ZIP, total_population = Total)
+```
 
+Now that we have the data from the county Board of Health and the Census Bureau, we can combine them into a single data frame and calculate cases per thousand population. 
+
+```{r}
 #Join ACS data with local COVID-19 data and specify column types
 
 dekalb <- dekalb %>%
@@ -61,6 +74,9 @@ dekalb <- dekalb %>%
 remove(zcta)
 remove(zcta_pop)
 ```
+
+Now that these data have been tidied, combined, and calculated, we can take a look and see if there's a pattern.
+
 ```{r}
 #Now let's make a plot to see if there is a correlation between income and disease
 
@@ -69,15 +85,20 @@ ggplot(data = dekalb,
   geom_point() +
   geom_smooth()
 ```
+
+That looks like a pretty clear correlation. We can fit the data to a linear model to express the relation more clearly and to see how substantial and statistically significant it is.   
+
 ```{r}
 #It looks like there's a correlation. Let's try modeling it
 
 mod_covid <- lm(cases_per_thousand ~ median_income, dekalb)
 summary(mod_covid)
 ```
-```{r}
-anova(mod_covid)
-```
+
+It looks like median income explains about a quarter of the variation between ZIP Codes in DeKalb with a high degree of certainty.
+
+Now let's make a nicer looking plot to communicate these results.
+
 ```{r}
 #Now let's make a prettier plot to communicate these results
 

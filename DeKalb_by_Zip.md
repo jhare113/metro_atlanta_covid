@@ -1,7 +1,7 @@
-DeKalb County by Zipcode
+DeKalb County by Zipcode Methodology
 ================
 
-July 8, 2020
+July 9, 2020
 
 ``` r
 #Load required libraries
@@ -23,7 +23,16 @@ library(tidyverse)
 ``` r
 library(modelr)
 library(ggrepel)
+```
 
+The [DeKalb County Board of
+Health](https://www.dekalbhealth.net/covid-19dekalb/) has released data
+on local COVID-19 cases, sorted by ZIP Code. This information has not
+been shared in a format that is suitable for data analysis, so I
+copied-and-pasted the raw numbers into a text file, which I then
+imported and tidied.
+
+``` r
 #Import and tidy data from DeKalb County Board of Health 
 #https://www.dekalbhealth.net/covid-19dekalb/
 
@@ -31,23 +40,31 @@ dekalb <- read_lines("Dekalb.txt", skip_empty_rows = TRUE)
 dekalb <- dekalb[dekalb != "\t"]
 dekalb <- dekalb[6:(length(dekalb))]
 dekalb <- matrix(dekalb, ncol = 5, byrow = TRUE) %>%
-  as_tibble() %>%
-  select(V1, V3) %>%
-  rename(ZIP = V1,
-         current_count = V3,)
+  as_tibble(.name_repair = "unique") %>%
+  select(...1, ...3) %>%
+  rename(ZIP = ...1,
+         current_count = ...3,)
 ```
 
-    ## Warning: The `x` argument of `as_tibble.matrix()` must have column names if `.name_repair` is omitted as of tibble 2.0.0.
-    ## Using compatibility `.name_repair`.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_warnings()` to see where this warning was generated.
+    ## New names:
+    ## * `` -> ...1
+    ## * `` -> ...2
+    ## * `` -> ...3
+    ## * `` -> ...4
+    ## * `` -> ...5
+
+The U.S. Census Bureau’s most recent American Community Survey 5-year
+estimate, released in 2018, provides estimates at the ZIP Code level (or
+rather ZCTA) for a variety of statistics on the U.S. population. The
+2010 Census provides population counts for each ZCTA, information we
+need to calculate cases per capita.
 
 ``` r
 #Import data from US Census American Community Survey 2018 5-year estimate
 
 zcta <-
   read_csv("ACSST5Y2018.S1901_data_with_overlays_2020-07-04T190723.csv",
-           skip = 1) %>%
+           skip = 1, na = "null") %>%
   mutate(ZIP = str_extract(`Geographic Area Name`,
                            ".....$")) %>%
   select(ZIP, `Estimate!!Households!!Median income (dollars)`)
@@ -68,16 +85,6 @@ zcta <-
 
     ## See spec(...) for full column specifications.
 
-    ## Warning: 280 parsing failures.
-    ##   row                                      col expected actual                                                         file
-    ## 29477 Estimate!!Households!!Total              a double   null 'ACSST5Y2018.S1901_data_with_overlays_2020-07-04T190723.csv'
-    ## 29477 Margin of Error!!Households MOE!!Total   a double   null 'ACSST5Y2018.S1901_data_with_overlays_2020-07-04T190723.csv'
-    ## 29477 Estimate!!Families!!Total                a double   null 'ACSST5Y2018.S1901_data_with_overlays_2020-07-04T190723.csv'
-    ## 29477 Margin of Error!!Families MOE!!Total     a double   null 'ACSST5Y2018.S1901_data_with_overlays_2020-07-04T190723.csv'
-    ## 29477 Estimate!!Married-couple families!!Total a double   null 'ACSST5Y2018.S1901_data_with_overlays_2020-07-04T190723.csv'
-    ## ..... ........................................ ........ ...... ............................................................
-    ## See problems(...) for more details.
-
 ``` r
 #Import population data from 2010 Census
 
@@ -93,6 +100,10 @@ zcta_pop <- read_csv("DECENNIALSF12010.P1_data_with_overlays_2020-07-06T171622.c
     ##   `Geographic Area Name` = col_character(),
     ##   Total = col_double()
     ## )
+
+Now that we have the data from the county Board of Health and the Census
+Bureau, we can combine them into a single data frame and calculate cases
+per thousand population.
 
 ``` r
 #Join ACS data with local COVID-19 data and specify column types
@@ -125,6 +136,9 @@ remove(zcta)
 remove(zcta_pop)
 ```
 
+Now that these data have been tidied, combined, and calculated, we can
+take a look and see if there’s a pattern.
+
 ``` r
 #Now let's make a plot to see if there is a correlation between income and disease
 
@@ -136,7 +150,11 @@ ggplot(data = dekalb,
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](DeKalb_by_Zip_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](DeKalb_by_Zip_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+That looks like a pretty clear correlation. We can fit the data to a
+linear model to express the relation more clearly and to see how
+substantial and statistically significant it is.
 
 ``` r
 #It looks like there's a correlation. Let's try modeling it
@@ -164,18 +182,10 @@ summary(mod_covid)
     ## Multiple R-squared:  0.2556, Adjusted R-squared:  0.233 
     ## F-statistic: 11.33 on 1 and 33 DF,  p-value: 0.001949
 
-``` r
-anova(mod_covid)
-```
+It looks like median income explains about a quarter of the variation
+between ZIP Codes in DeKalb with a high degree of certainty.
 
-    ## Analysis of Variance Table
-    ## 
-    ## Response: cases_per_thousand
-    ##               Df Sum Sq Mean Sq F value   Pr(>F)   
-    ## median_income  1 173.02 173.022   11.33 0.001949 **
-    ## Residuals     33 503.94  15.271                    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Now let’s make a nicer looking plot to communicate these results.
 
 ``` r
 #Now let's make a prettier plot to communicate these results
@@ -195,4 +205,4 @@ ggplot(data = dekalb,
   )
 ```
 
-![](DeKalb_by_Zip_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](DeKalb_by_Zip_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
