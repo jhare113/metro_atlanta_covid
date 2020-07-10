@@ -42,12 +42,16 @@ zcta <-
                            ".....$")) %>%
   select(ZIP, `Estimate!!Households!!Median income (dollars)`)
 
-#Import population data from 2010 Census
+#Import population data from 2010 Census. I originally used data for the entire 
+#ZCTA, but this doesn't work because some of these ZCTAs do not fall entirely 
+#within DeKalb. We need to figure out how many people live in DeKalb, not in the 
+#ZCTA as a whole. Fortunately the Census Bureau provides a file that specifies 
+#the relation between ZCTAs and counties, and this document gives us the numbers 
+#we need.  
 
-zcta_pop <- read_csv("DECENNIALSF12010.P1_data_with_overlays_2020-07-06T171622.csv",
-                     skip = 1) %>%
-  mutate(ZIP = str_extract(`Geographic Area Name`, "\\d\\d\\d\\d\\d")) %>%
-  select(ZIP, total_population = Total)
+zcta_pop <- read_csv("zcta_county_rel_10.txt") %>%
+  filter(STATE == "13" & COUNTY == "089") %>%
+  select(ZIP = ZCTA5, total_population = POPPT)
 ```
 
 Now that we have the data from the county Board of Health and the Census Bureau, we can combine them into a single data frame and calculate cases per thousand population. 
@@ -86,7 +90,7 @@ ggplot(data = dekalb,
   geom_smooth()
 ```
 
-That looks like a pretty clear correlation. We can fit the data to a linear model to express the relation more clearly and to see how substantial and statistically significant it is.   
+Before I corrected the data to account for ZCTAs not falling entirely within the county, it seemed like there was a correlation between median income and COVID-19, but I was wrong! But let's go ahead and fit the data to a linear model anyway (since it's already done). 
 
 ```{r}
 #It looks like there's a correlation. Let's try modeling it
@@ -95,24 +99,4 @@ mod_covid <- lm(cases_per_thousand ~ median_income, dekalb)
 summary(mod_covid)
 ```
 
-It looks like median income explains about a quarter of the variation between ZIP Codes in DeKalb with a high degree of certainty.
-
-Now let's make a nicer looking plot to communicate these results.
-
-```{r}
-#Now let's make a prettier plot to communicate these results
-
-ggplot(data = dekalb,
-       mapping = aes(median_income, cases_per_thousand)) +
-  geom_point() +
-  geom_smooth(mapping = aes(),
-              method = "lm",
-              formula = y ~ x) +
-  geom_text_repel(aes(label = ZIP), alpha = .6) +
-  labs(title = "Geographical Spread of COVID-19 in DeKalb County",
-       subtitle = "Lower Median Income Associated with Higher Rates",
-       caption = "Sources: DeKalb County Board of Health, U.S. Census Bureau",
-       x = "Median Income by ZIP Code",
-       y = "COVID-19 Cases per Thousand"
-  )
-```
+That confirms there's nothing there!
