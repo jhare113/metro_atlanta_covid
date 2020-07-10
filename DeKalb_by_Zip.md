@@ -1,7 +1,7 @@
 DeKalb County by Zipcode
 ================
 
-July 9, 2020
+July 10, 2020
 
 ``` r
 #Load required libraries

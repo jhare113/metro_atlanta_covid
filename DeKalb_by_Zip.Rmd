@@ -3,7 +3,7 @@ title: "DeKalb County by Zipcode"
 output:
   github_document: default
 ---
-July 9, 2020
+July 10, 2020
 
 ```{r setup}
 #Load required libraries
