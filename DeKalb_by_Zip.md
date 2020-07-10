@@ -129,7 +129,9 @@ dekalb <- dekalb %>%
 
 dekalb <- dekalb %>%
   inner_join(zcta_pop) %>%
-  mutate(cases_per_thousand = current_count / (total_population / 1000))
+  mutate(cases_per_thousand = current_count / (total_population / 1000)) %>%
+  #something weird is going in with 30350. Let's exclude it
+  filter(ZIP != "30350")
 ```
 
     ## Joining, by = "ZIP"
@@ -159,8 +161,11 @@ ggplot(data = dekalb,
 
 Before I corrected the data to account for ZCTAs not falling entirely
 within the county, it seemed like there was a correlation between median
-income and COVID-19, but I was wrong\! But let’s go ahead and fit the
-data to a linear model anyway (since it’s already done).
+income and COVID-19, but I made the adjustments and I looked like I was
+wrong. However, when I exclude a single ZIP Code that looks like there’s
+something funny about it (30350), there does seem to be something of a
+pattern, even if it’s much weaker than I had originally thought. Let’s
+go ahead and fit the data to a linear model anyway.
 
 ``` r
 #It looks like there's a correlation. Let's try modeling it
@@ -175,15 +180,39 @@ summary(mod_covid)
     ## 
     ## Residuals:
     ##    Min     1Q Median     3Q    Max 
-    ## -15.95 -13.72 -12.74  -9.59 345.44 
+    ## -4.304 -2.148 -1.141  1.736  9.435 
     ## 
     ## Coefficients:
-    ##                 Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)    2.644e+01  4.180e+01   0.632    0.532
-    ## median_income -8.557e-05  6.163e-04  -0.139    0.891
+    ##                 Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)    1.414e+01  2.277e+00   6.210 1.04e-06 ***
+    ## median_income -7.352e-05  3.352e-05  -2.194   0.0367 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 65.3 on 29 degrees of freedom
-    ## Multiple R-squared:  0.0006643,  Adjusted R-squared:  -0.0338 
-    ## F-statistic: 0.01928 on 1 and 29 DF,  p-value: 0.8905
+    ## Residual standard error: 3.551 on 28 degrees of freedom
+    ## Multiple R-squared:  0.1467, Adjusted R-squared:  0.1162 
+    ## F-statistic: 4.813 on 1 and 28 DF,  p-value: 0.03672
 
-That confirms there’s nothing there\!
+So it looks like there’s a correlation, but it’s not as strong as I had
+thought. Let’s go ahead and make a nice chart to communicate these
+results.
+
+``` r
+#Now let's make a prettier plot to communicate these results
+
+ggplot(data = dekalb,
+       mapping = aes(median_income, cases_per_thousand)) +
+  geom_point() +
+  geom_smooth(mapping = aes(),
+              method = "lm",
+              formula = y ~ x) +
+  geom_text_repel(aes(label = ZIP), alpha = .6) +
+  labs(title = "Geographical Spread of COVID-19 in DeKalb County",
+       subtitle = "Lower Median Income Associated with Higher Rates",
+       caption = "Sources: DeKalb County Board of Health, U.S. Census Bureau",
+       x = "Median Income by ZIP Code",
+       y = "COVID-19 Cases per Thousand"
+  )
+```
+
+![](DeKalb_by_Zip_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

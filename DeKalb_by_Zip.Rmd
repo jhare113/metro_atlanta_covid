@@ -71,7 +71,9 @@ dekalb <- dekalb %>%
 
 dekalb <- dekalb %>%
   inner_join(zcta_pop) %>%
-  mutate(cases_per_thousand = current_count / (total_population / 1000))
+  mutate(cases_per_thousand = current_count / (total_population / 1000)) %>%
+  #something weird is going in with 30350. Let's exclude it
+  filter(ZIP != "30350")
 
 #clear redundant tibbles from memory
 
@@ -90,7 +92,7 @@ ggplot(data = dekalb,
   geom_smooth()
 ```
 
-Before I corrected the data to account for ZCTAs not falling entirely within the county, it seemed like there was a correlation between median income and COVID-19, but I was wrong! But let's go ahead and fit the data to a linear model anyway (since it's already done). 
+Before I corrected the data to account for ZCTAs not falling entirely within the county, it seemed like there was a correlation between median income and COVID-19, but I made the adjustments and I looked like I was wrong. However, when I exclude a single ZIP Code that looks like there's something funny about it (30350), there does seem to be something of a pattern, even if it's much weaker than I had originally thought. Let's go ahead and fit the data to a linear model anyway. 
 
 ```{r}
 #It looks like there's a correlation. Let's try modeling it
@@ -99,4 +101,22 @@ mod_covid <- lm(cases_per_thousand ~ median_income, dekalb)
 summary(mod_covid)
 ```
 
-That confirms there's nothing there!
+So it looks like there's a correlation, but it's not as strong as I had thought. Let's go ahead and make a nice chart to communicate these results.
+
+```{r}
+#Now let's make a prettier plot to communicate these results
+
+ggplot(data = dekalb,
+       mapping = aes(median_income, cases_per_thousand)) +
+  geom_point() +
+  geom_smooth(mapping = aes(),
+              method = "lm",
+              formula = y ~ x) +
+  geom_text_repel(aes(label = ZIP), alpha = .6) +
+  labs(title = "Geographical Spread of COVID-19 in DeKalb County",
+       subtitle = "Lower Median Income Associated with Higher Rates",
+       caption = "Sources: DeKalb County Board of Health, U.S. Census Bureau",
+       x = "Median Income by ZIP Code",
+       y = "COVID-19 Cases per Thousand"
+  )
+```
