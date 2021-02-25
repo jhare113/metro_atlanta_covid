@@ -17,11 +17,24 @@ counties <- read_csv(
     )
 )
 
+usa <- read_csv(
+        "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv",
+        col_types = cols(
+            date = col_date(format = ""),
+            cases = col_double(),
+            deaths = col_double()
+        )
+    )
+
 states <- counties %>% select(state) %>% unique() %>% arrange(state)
 
 #Calculate the total number of cases and deaths in the US
 
-usa <- counties %>%
+usa_deaths <- max(usa$deaths)
+
+usa_cases <- max(usa$cases)
+
+usa <-usa %>% 
     group_by(date) %>%
     summarise("all_cases" = sum(cases),
               "all_deaths" = sum(deaths)) %>%
@@ -43,10 +56,6 @@ usa <- counties %>%
         fill = 0,
         align = "right"
     ))
-
-usa_deaths <- usa$all_deaths[nrow(usa)]
-
-usa_cases <- usa$all_cases[nrow(usa)]
 
 #Define functions for creating plots
 
@@ -97,7 +106,7 @@ ui <- fluidPage(
     # Application title
     titlePanel("COVID-19 Data by State and County"),
     
-    # Sidebar with dropdown menus to choose state and county
+    # Sidebar with drop-down menus to choose state and county
     sidebarLayout(
         sidebarPanel(
             selectInput(
