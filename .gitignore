@@ -2,3 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+.gitignore
+COVID_by_county/rsconnect/*
+COVID_by_county/www/*
