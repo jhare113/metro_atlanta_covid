@@ -5,8 +5,8 @@ account: jamesphare
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2443533
-bundleId: 3278099
+bundleId: 4272965
 url: https://jamesphare.shinyapps.io/COVID_by_county/
-when: 1592324598.81792
+when: 1614292926.72787
 asMultiple: FALSE
 asStatic: FALSE

@@ -18,13 +18,13 @@ counties <- read_csv(
 )
 
 usa <- read_csv(
-        "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv",
-        col_types = cols(
-            date = col_date(format = ""),
-            cases = col_double(),
-            deaths = col_double()
-        )
+    "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv",
+    col_types = cols(
+        date = col_date(format = ""),
+        cases = col_double(),
+        deaths = col_double()
     )
+)
 
 states <- counties %>% select(state) %>% unique() %>% arrange(state)
 
@@ -34,7 +34,7 @@ usa_deaths <- max(usa$deaths)
 
 usa_cases <- max(usa$cases)
 
-usa <-usa %>% 
+usa <- usa %>%
     group_by(date) %>%
     summarise("all_cases" = sum(cases),
               "all_deaths" = sum(deaths)) %>%
@@ -109,13 +109,15 @@ ui <- fluidPage(
     # Sidebar with drop-down menus to choose state and county
     sidebarLayout(
         sidebarPanel(
-            selectInput(
+            selectizeInput(
                 "state",
                 label = "State:",
                 choices = states$state,
                 selected = "Georgia"
             ),
-            uiOutput("state_counties"),
+            selectizeInput("county",
+                           label = "County:",
+                           choices = NULL),
             tags$p(textOutput("text_data")),
             tags$p(
                 "In the United States, there have been",
@@ -183,7 +185,7 @@ ui <- fluidPage(
 
 # Define server logic required to render plot
 
-server <- function(input, output) {
+server <- function(input, output, session) {
     #create plots for county
     
     output$county_cases <- renderPlot({
@@ -257,21 +259,18 @@ server <- function(input, output) {
             death_chart()
     })
     
+    #create reactive county drop-down menu
     
-    #create reactive county dropdown menu
-    
-    output$state_counties <- renderUI({
+    observe({
         counties_by_state <- counties %>%
             filter(state == input$state) %>%
             arrange(county)
-        selectInput(
-            "county",
-            label = "County:",
-            choices = counties_by_state$county,
-            selected = 1
-        )
+        
+        updateSelectizeInput(session,
+                             "county",
+                             choices = counties_by_state$county,
+                             server = TRUE)
     })
-    
     
     #create plots for USA
     
